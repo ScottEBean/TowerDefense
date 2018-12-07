@@ -1,0 +1,20 @@
+{
+  "name": "towerdefense",
+  "version": "1.0.0",
+  "description": "GameDev tower defense game",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottEBean/TowerDefense.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ScottEBean/TowerDefense/issues"
+  },
+  "homepage": "https://github.com/ScottEBean/TowerDefense#readme"
+}

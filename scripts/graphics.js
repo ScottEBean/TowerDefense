@@ -4,102 +4,159 @@
 // ------------------------------------------------------------------
 Game.graphics = (function () {
 
-	let backgroundCanvas = document.getElementById('backgroundCanvas');
-	let backgroundContext = backgroundCanvas.getContext('2d');
+	let bgndCanvas = document.getElementById('backgroundCanvas');
+	let bgndCtx = bgndCanvas.getContext('2d');
 	let gameCanvas = document.getElementById('gameCanvas');
-	let gameContext = gameCanvas.getContext('2d');
+	let gameCtx = gameCanvas.getContext('2d');
 	let topLayerCanvas = document.getElementById('topLayerCanvas');
-	let topLayerContext = topLayerCanvas.getContext('2d');
-	
+	let topLayerCtx = topLayerCanvas.getContext('2d');
+	let gridSize = 50;
+	let cyanStrokeFill = 'rgba(0, 208, 208, 1)';
+
 	//------------------------------------------------------------------
 	// Public function that allows the client code to clear the canvas.
 	//------------------------------------------------------------------
 	function clear() {
-		gameContext.save();
-		gameContext.setTransform(1, 0, 0, 1, 0, 0);
-		gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-		gameContext.restore();
+		gameCtx.save();
+		gameCtx.setTransform(1, 0, 0, 1, 0, 0);
+		gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+		gameCtx.restore();
 	}
 
 	function clearTopLayer() {
-		topLayerContext.save();
-		topLayerContext.setTransform(1, 0, 0, 1, 0, 0);
-		topLayerContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-		topLayerContext.restore();
+		topLayerCtx.save();
+		topLayerCtx.setTransform(1, 0, 0, 1, 0, 0);
+		topLayerCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+		topLayerCtx.restore();
 	}
 
-	function drawBackground() {
-		backgroundContext.fillStyle = "rgba(0, 0, 0, 0.25)";
-		backgroundContext.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-		backgroundContext.fillStyle = 'red';
+	function drawBgnd() {
+		drawBgndBorder();
+	}
+	
+	function drawBgndBorder(){
+		var x0 = bgndCanvas.width/4; // 250
+		var xm = (bgndCanvas.width - x0)/2 + x0; // 625
+		var xw = bgndCanvas.width;
+		var ym = (bgndCanvas.height)/2;
+		var yh = bgndCanvas.height;
+		//bgndCtx.save();
+		bgndCtx.beginPath();
+		bgndCtx.moveTo(x0, yh/2 - gridSize/2); // 250,350
+		bgndCtx.lineTo(x0, 0)/ // 250,0
+		bgndCtx.lineTo(xm - gridSize/2, 0); // 600,0
+		bgndCtx.moveTo(xm + gridSize/2, 0); // 650,0
+		bgndCtx.lineTo(xw, 0); // 1000,0
+		bgndCtx.lineTo(xw, ym - gridSize/2); // 1000,350
+		bgndCtx.moveTo(xw, ym + gridSize/2); // 1000,400
+		bgndCtx.lineTo(xw, yh); // 1000,750
+		bgndCtx.lineTo(xm + gridSize / 2, yh); // 650,750
+		bgndCtx.moveTo(xm - gridSize / 2, yh); // 600,750
+		bgndCtx.lineTo(x0, yh); // 250,750
+		bgndCtx.lineTo(x0, ym + gridSize/2); // 250,400
+
+		bgndCtx.lineWidth = 5;
+		bgndCtx.strokeStyle = cyanStrokeFill;
+		bgndCtx.stroke();
+		//bgndCtx.restore();
 	}
 
-	function setCountdownTextProperties() {
-		topLayerContext.font = '45px Roboto';
-		topLayerContext.fillStyle = "rgba(0, 0, 0, 0.25)";
-		topLayerContext.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-		topLayerContext.fillStyle = '#00d0d0';
-	}
+	function drawGrid() {
+		gameCtx.save();
+		bgndCtx.beginPath();
+		gameCtx.setLineDash([1, 10]);
+		//draw Vertical grid lines
+		for (var i = gameCanvas.width / 4; i <= gameCanvas.width; i += gridSize) {
+			gameCtx.moveTo(i, 0);
+			gameCtx.lineTo(i, gameCanvas.height);
+		}
 
-	function setScoreTextProps() {
-		gameContext.font = '15px Roboto';
-		gameContext.fillStyle = '#00d0d0';
-	}
+		//draw horizontal grid lines
+		for (var i = 0; i <= gameCanvas.height; i += gridSize) {
+			gameCtx.moveTo(gameCanvas.width / 4, i);
+			gameCtx.lineTo(gameCanvas.width, i);
+		}
 
-	function setLargeTextProperties() {
-		topLayerContext.font = '125px Roboto';
-		topLayerContext.fillStyle = "rgba(0, 0, 0, 0.25)";
-		topLayerContext.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-		topLayerContext.fillStyle = '#00d0d0';
-	}
-
-	function drawText(text, x, y) {
-		topLayerContext.fillText(text, x, y);
-
-		// This was used to set the correct x coordinate for text.
-		// For no conceivable reason text is drawn from the x: left y: bottom
-		// or x: left y:middle of the character/string
-		//console.log(topContext.measureText(text));
+		gameCtx.lineWidth = 1;
+		gameCtx.strokeStyle = 'rgba(0, 208, 208, .025)';
+		gameCtx.stroke();
+		gameCtx.setLineDash([]);
+		gameCtx.restore();
 	}
 
 	function drawScore(score) {
-		setScoreTextProps();
-		var scoreText = 'Score: ' + score;
-		var textWidth = gameContext.measureText(scoreText).width + 10;
-		gameContext.fillText(scoreText, gameCanvas.width - textWidth, gameCanvas.height - 10);
+		gameCtx.font = '15px Roboto';
+		gameCtx.fillStyle = cyanStrokeFill;
+		var scoreText = '$ ' + score;
+		var textWidth = gameCtx.measureText(scoreText).width + 10;
+		gameCtx.fillText(scoreText, 10, gameCanvas.height - 10);
 	}
 
-	function intersection(r1l, r1r, r1t, r1b, r2l, r2r, r2t, r2b) {
-		return !(r2l > r1r ||
-			r2r < r1l ||
-			r2t > r1b ||
-			r2b < r1t);
+	function drawLives(lives){
+		gameCtx.font = '15px Roboto';
+		gameCtx.fillStyle = cyanStrokeFill;
+		var livesText = 'Lives: ' + lives;
+		var textWidth = gameCtx.measureText(livesText).width + 10;
+		gameCtx.fillText(livesText, 250 - textWidth, gameCanvas.height - 10);
 	}
 
-	function BlocksIntersect(blockArr, x, y) {
-		if (blockArr.length == 0) { return false; }
-		for (let i = 0; i < blockArr.length; i++) {
-			var r1 = blockArr[i].getCoords();
-			if (intersection(r1.x, r1.x + BLOCKSIZE, r1.y, r1.y + BLOCKSIZE, x, x + BLOCKSIZE, y, y + BLOCKSIZE)) {
-				return true;
-			}
-		}
-		return false;
+	function airCreep(spec){
+		that = {};
+		var center = { x: spec.center, y: spec.center };
+		var img = new Image(50, 50);
+		return that;
+	}
+
+	function airTower(spec){
+		that = {};
+		var center = {x: spec.center, y: spec.center};
+		var img = new Image(50, 50);
+		var level = 1;
+		var cost = level * 50;
+		var damage = level * 10;
+
+		return that;
+	}
+
+	function groundCreepA(spec){
+		that = {};
+		var center = { x: spec.center, y: spec.center };
+		var img = new Image(50, 50);
+		return that;
+	}
+	function groundCreepB(spec) {
+		that = {};
+		var center = { x: spec.center, y: spec.center };
+		var img = new Image(50, 50);
+		return that;
 	}
 
 
-	
+	function groundTower(spec) {
+		that = {};
+		var center = { x: spec.center, y: spec.center };
+		var img = new Image(50, 50);
+		var level = 1;
+		var cost = level * 50;
+		var damage = level * 10;
 
-	
+		return that;
+	}
+
 
 	return {
-		drawBackground: drawBackground,
-		drawScore: drawScore,
-		setCountdownTextProperties: setCountdownTextProperties,
-		setLargeTextProperties: setLargeTextProperties,
-		drawText: drawText,
+		airCreep: airCreep,
+		airTower: airTower,
+		clear: clear,
 		clearTopLayer: clearTopLayer,
-		clear: clear,		
+		drawBgnd: drawBgnd,
+		drawBgndBorder: drawBgndBorder,
+		drawGrid: drawGrid,
+		drawLives: drawLives,
+		drawScore: drawScore,
+		groundCreepA: groundCreepA,
+		groundCreepB: groundCreepB,
+		groundTower: groundTower,
 	};
 
 }());
