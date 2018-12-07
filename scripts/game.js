@@ -8,6 +8,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 	var lives = 10;
 	var score = 100;
 	var lastTimeStamp = performance.now();
+	var ac = graphics.airCreep({
+		center:{x : 3, y : 4}
+		});
 	
 
 	

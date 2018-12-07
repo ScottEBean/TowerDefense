@@ -78,17 +78,17 @@ Game.graphics = (function () {
 		}
 
 		gameCtx.lineWidth = 1;
-		gameCtx.strokeStyle = 'rgba(0, 208, 208, .025)';
+		gameCtx.strokeStyle = 'rgba(0, 255, 0, .075)';
 		gameCtx.stroke();
-		gameCtx.setLineDash([]);
 		gameCtx.restore();
+		gameCtx.setLineDash([]);
+
 	}
 
 	function drawScore(score) {
 		gameCtx.font = '15px Roboto';
 		gameCtx.fillStyle = cyanStrokeFill;
-		var scoreText = '$ ' + score;
-		var textWidth = gameCtx.measureText(scoreText).width + 10;
+		var scoreText = '$ ' + score;		
 		gameCtx.fillText(scoreText, 10, gameCanvas.height - 10);
 	}
 
@@ -102,14 +102,18 @@ Game.graphics = (function () {
 
 	function airCreep(spec){
 		that = {};
-		var center = { x: spec.center, y: spec.center };
+		that.center = { x: spec.center.x, y: spec.center.y };
 		var img = new Image(50, 50);
+
+		that.draw = function(){
+
+		}
 		return that;
 	}
 
 	function airTower(spec){
 		that = {};
-		var center = {x: spec.center, y: spec.center};
+		var center = {x: spec.center.x, y: spec.center.y};
 		var img = new Image(50, 50);
 		var level = 1;
 		var cost = level * 50;
