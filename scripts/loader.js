@@ -41,44 +41,86 @@ Game.loader = (function() {
 			onComplete: null
 		}],
 		assetOrder = [{
-			key: 'base',
+			key: 'towerBase',
 			source: '/assets/towers/base.gif'
 		}, {
-			key: 'towers11',
+			key: 'tower11',
 			source: '/assets/towers/t11.png'
 		}, {
-			key: 'towers12',
+			key: 'tower12',
 			source: '/assets/towers/t12.png'
 		}, {
-			key: 'towers13',
+			key: 'tower13',
 			source: '/assets/towers/t13.png'
 		}, {
-			key: 'towers21',
+			key: 'tower21',
 			source: '/assets/towers/t21.png'
 		}, {
-			key: 'towers22',
+			key: 'tower22',
 			source: '/assets/towers/t22.png'
 		}, {
-			key: 'towers23',
+			key: 'tower23',
 			source: '/assets/towers/t23.png'
 		}, {
-			key: 'towers31',
+			key: 'tower31',
 			source: '/assets/towers/t31.png'
 		}, {
-			key: 'towers32',
+			key: 'tower32',
 			source: '/assets/towers/t32.png'
 		}, {
-			key: 'towers33',
+			key: 'tower33',
 			source: '/assets/towers/t33.png'
 		}, {
-			key: 'towers41',
+			key: 'tower41',
 			source: '/assets/towers/t41.png'
 		}, {
-			key: 'towers42',
+			key: 'tower42',
 			source: '/assets/towers/t42.png'
 		}, {
-			key: 'towers43',
+			key: 'tower43',
 			source: '/assets/towers/t43.png'
+        }, {
+			key: 'airCreep1',
+			source: '/assets/creeps/ac1.png'
+        }, {
+			key: 'airCreep2',
+			source: '/assets/creeps/ac2.png'
+        }, {
+			key: 'airCreep3',
+			source: '/assets/creeps/ac3.png'
+        }, {
+			key: 'airCreep4',
+			source: '/assets/creeps/ac4.png'
+        }, {
+			key: 'airCreep5',
+			source: '/assets/creeps/ac5.png'
+        }, {
+			key: 'airCreep6',
+			source: '/assets/creeps/ac6.png'
+        }, {
+			key: 'groundCreep11',
+			source: '/assets/creeps/gc11.png'
+        }, {
+			key: 'groundCreep12',
+			source: '/assets/creeps/gc12.png'
+        }, {
+			key: 'groundCreep13',
+			source: '/assets/creeps/gc13.png'
+        }, {
+			key: 'groundCreep14',
+			source: '/assets/creeps/gc14.png'
+        }, {
+			key: 'groundCreep21',
+			source: '/assets/creeps/gc21.png'
+        }, {
+			key: 'groundCreep22',
+			source: '/assets/creeps/gc22.png'
+        }, {
+			key: 'groundCreep23',
+			source: '/assets/creeps/gc23.png'
+        }, {
+			key: 'groundCreep24',
+			source: '/assets/creeps/gc24.png'
         }];
 
 	//------------------------------------------------------------------
@@ -100,35 +142,35 @@ Game.loader = (function() {
 	// load a tiled image into memory.
 	//
 	//------------------------------------------------------------------
-	function prepareTiledImage(assetArray, rootName, rootKey, sizeX, sizeY, tileSize) {
-		var numberX = sizeX / tileSize,
-			numberY = sizeY / tileSize,
-			tileFile = '',
-			tileSource = '',
-			tileKey = '',
-			tileX = 0,
-			tileY = 0;
+	// function prepareTiledImage(assetArray, rootName, rootKey, sizeX, sizeY, tileSize) {
+	// 	var numberX = sizeX / tileSize,
+	// 		numberY = sizeY / tileSize,
+	// 		tileFile = '',
+	// 		tileSource = '',
+	// 		tileKey = '',
+	// 		tileX = 0,
+	// 		tileY = 0;
 
-		//
-		// Create an entry in the assets that holds the properties of the tiled image
-		Game.assets[rootKey] = {
-			width: sizeX,
-			height: sizeY,
-			tileSize: tileSize
-		};
+	// 	//
+	// 	// Create an entry in the assets that holds the properties of the tiled image
+	// 	Game.assets[rootKey] = {
+	// 		width: sizeX,
+	// 		height: sizeY,
+	// 		tileSize: tileSize
+	// 	};
 
-		for (tileY = 0; tileY < numberY; tileY += 1) {
-			for (tileX = 0; tileX < numberX; tileX += 1) {
-				tileFile = numberPad((tileY * numberX + tileX), 4);
-				tileSource = rootName + tileFile + '.jpg';
-				tileKey = rootKey + '-' + tileFile;
-				assetArray.push({
-					key: tileKey,
-					source: tileSource
-				});
-			}
-		}
-	}
+	// 	for (tileY = 0; tileY < numberY; tileY += 1) {
+	// 		for (tileX = 0; tileX < numberX; tileX += 1) {
+	// 			tileFile = numberPad((tileY * numberX + tileX), 4);
+	// 			tileSource = rootName + tileFile + '.jpg';
+	// 			tileKey = rootKey + '-' + tileFile;
+	// 			assetArray.push({
+	// 				key: tileKey,
+	// 				source: tileSource
+	// 			});
+	// 		}
+	// 	}
+	// }
 
 	//------------------------------------------------------------------
 	//
