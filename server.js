@@ -13,6 +13,7 @@ var mimeTypes = {
 	'.css' : 'text/css',
 	'.png' : 'image/png',
 	'.jpg' : 'image/jpeg',
+	'.gif' : 'image/gif',
 	'.mp3' : 'audio/mpeg3'
 };
 
