@@ -65,6 +65,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 
 	function render() {
 		graphics.clear();
+		graphics.clearMenuText();
 		graphics.drawScore(score);
 		graphics.drawLives(lives);
 	}

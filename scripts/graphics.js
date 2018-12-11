@@ -9,7 +9,7 @@ Game.graphics = (function () {
 	let gameCanvas = document.getElementById('gameCanvas');
 	let gameCtx = gameCanvas.getContext('2d');
 	let menuCanvas = document.getElementById('menuCanvas');
-	let menuCtx = menuCanvas.getContxt('2d');
+	let menuCtx = menuCanvas.getContext('2d');
 	let gridSize = 50;
 	let cyanStrokeFill = 'rgba(0, 208, 208, 1)';
 
@@ -136,8 +136,8 @@ Game.graphics = (function () {
 		menuCtx.font = '15px Roboto';
 		menuCtx.fillStyle = cyanStrokeFill;
 		var livesText = 'Lives: ' + lives;
-		var textWidth = gameCtx.measureText(livesText).width + 10;
-		menuCtx.fillText(livesText, 250 - textWidth, gameCanvas.height - 10);
+		var textWidth = menuCtx.measureText(livesText).width + 10;
+		menuCtx.fillText(livesText, 250 - textWidth, menuCanvas.height - 10);
 	}	
 
 	function groundCreepA(spec){
