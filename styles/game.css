@@ -68,6 +68,13 @@ body{
 	display: block;	
 }
 
+/* #game .screen.active:not(.grid){
+	font-family: 'Roboto', sans-serif;
+	font-size: 35px;
+	text-align: center;
+	display: block;	
+} */
+
 /* #game .screen.active.grid {
 	font-family: 'Roboto', sans-serif;
 	font-size: 35px;
