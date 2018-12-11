@@ -18,13 +18,26 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		// keyboard.registerCommand(KeyEvent.DOM_VK_U, upgradetower());
 		// keyboard.registerCommand(KeyEvent.DOM_VK_S, sellTower());
 		// keyboard.registerCommand(KeyEvent.DOM_VK_G, startNextLevel());
+		keyboard.registerCommand(KeyEvent.DOM_VK_V, function(){
+			if(drawGrid){
+				drawGrid = false;
+				graphics.clearBackground();
+				return;
+			}
+
+			if(!drawGrid){
+				drawGrid = true;
+				graphics.drawGrid();
+				return;
+			}
+		});
 		keyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function () {
 			cancelNextRequest = true;
 			menu.showScreen('main-menu');
 		});
 
 		graphics.drawGrid();
-		graphics.drawBgnd();
+		graphics.drawBackground();
 	}	
 
 	function processInput(elapsedTime) {
@@ -52,7 +65,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 
 	function render() {
 		graphics.clear();
-		if(drawGrid){ graphics.drawGrid(); }
 		graphics.drawScore(score);
 		graphics.drawLives(lives);
 	}

@@ -2,15 +2,15 @@
 <html lang="en-US">
 
 <head>
-	<meta charset="UTF-8">	
+	<meta charset="UTF-8">
 	<title>Tower Defense</title>
 	<link rel="stylesheet" href="styles/game.css">
 </head>
 
-<body >
+<body>
 	<div id="header">
 		<h1>Tower Defense</h1>
-		<!-- <h1>|</h1> -->		
+		<!-- <h1>|</h1> -->
 	</div>
 	<div id="game">
 
@@ -23,20 +23,20 @@
 			</ul>
 		</div>
 
-		<div id="game-play" class="canvases screen">
+		<div id="game-play" class="grid screen">
 			<canvas class="canvas" id="backgroundCanvas" width="1000" height="750" style="z-index: 1; "></canvas>
-			<canvas class="canvas" id="gameCanvas" width="1000" height="750" style="z-index: 2; "></canvas>
-			<canvas class="canvas" id="topLayerCanvas" width="1000" height="750" style="z-index: 3; "></canvas>
+			<canvas class="canvas" id="menuCanvas" width="250" height="750" style="z-index: 2"></canvas>
+			<canvas class="canvas" id="gameCanvas" width="750" height="750" style="z-index: 3; "></canvas>
 		</div>
 
 		<div id="high-scores" class="screen">
 			<h1>High Scores</h1>
 			<ol>
-				<li id="hs4"></li>
-				<li id="hs3"></li>
-				<li id="hs2"></li>
-				<li id="hs1"></li>
-				<li id="hs0"></li>
+				<li id="hs4">100</li>
+				<li id="hs3">75</li>
+				<li id="hs2">50</li>
+				<li id="hs1">25</li>
+				<li id="hs0">10</li>
 			</ol>
 			<ul class="menu">
 				<li><button id="id-high-scores-back" class="button">Back</button></li>
@@ -45,7 +45,7 @@
 
 		<div id="help" class="screen">
 			<h1>Help</h1>
-			
+
 			<ul class="menu">
 				<li><button id="id-help-back" class="button">Back</button></li>
 			</ul>
@@ -65,28 +65,7 @@
 
 	</div>
 
-	<script data-main = "scripts/loader" src = "scripts/require.js"></scriptdata-main></script>
-
-	<!-- <script>
-		let Game = {
-			screens: {},
-		};
-	</script>
-		
-	<script src="scripts/menu.js"></script>
-	<script src="scripts/mainmenu.js"></script>
-	<script src="scripts/about.js"></script>
-	<script src="scripts/help.js"></script>
-	<script src="scripts/highscores.js"></script>
-
-	<script src="scripts/input.js"></script>
-	<script src="scripts/records.js"></script>
-	<script src="scripts/random.js"></script>
-
-	<script src="scripts/graphics.js"></script>
-	<script src="scripts/game.js"></script> -->
-
-
+	<script data-main="scripts/loader" src="scripts/require.js"></scriptdata-main></script>
 </body>
 
 </html>
