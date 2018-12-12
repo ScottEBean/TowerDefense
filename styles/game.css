@@ -47,11 +47,11 @@ body{
 }
 
 #menuCanvas{
-	background-color: rgba(255, 0, 50, 0.25);
+	background-color: rgba(255, 0, 50, 0.05);
 }
 
 #gameCanvas{
-	background-color: rgba(255, 255, 0, 0.25);
+	background-color: rgba(255, 255, 0, 0.05);
 }
 
 #game .screen {	
@@ -61,24 +61,20 @@ body{
 	z-index: 10;
 }
 
-#game .screen.active{
+#game .screen.grid.active {
 	font-family: 'Roboto', sans-serif;
 	font-size: 35px;
-	text-align: center;
-	display: block;	
+	display: grid;
+	grid: 750px / auto 250px 750px auto;	
+	margin: auto;
 }
 
-/* #game .screen.active:not(.grid){
+#game .screen.active:not(.grid){
 	font-family: 'Roboto', sans-serif;
 	font-size: 35px;
 	text-align: center;
 	display: block;	
-} */
-
-/* #game .screen.active.grid {
-	font-family: 'Roboto', sans-serif;
-	font-size: 35px;
-} */
+}  
 
 #main-menu {
 	padding-top: 1em;
