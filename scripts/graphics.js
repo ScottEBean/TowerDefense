@@ -16,9 +16,6 @@ Game.graphics = (function () {
 	//------------------------------------------------------------------
 	// Public function that allows the client code to clear the canvas.
 	//------------------------------------------------------------------
-	
-	
-
 	function clear() {
 		gameCtx.save();
 		gameCtx.setTransform(1, 0, 0, 1, 0, 0);
