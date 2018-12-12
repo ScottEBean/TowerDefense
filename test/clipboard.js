@@ -41,3 +41,12 @@ function createPath(path, endpoint) {
 function createUDPath() {
 
 }
+
+
+
+createQueue.push(graphics.tower({
+  center: { x: e.clientX, y: e.clientY },
+  rotation: 0,
+  weapon: Game.assets['tower11'],
+  fireRate: 1000
+}));

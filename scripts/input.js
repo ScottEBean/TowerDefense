@@ -46,6 +46,7 @@ Game.input = (function () {
 				}
 			}
 
+
 			//
 			// Now that we have processed all the inputs, reset everything back to the empty state
 			that.mouseDown.length = 0;
