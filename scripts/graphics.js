@@ -3,6 +3,7 @@
 // are located here.
 // ------------------------------------------------------------------
 Game.graphics = (function () {
+	'use strict';
 
 	let backCanvas = document.getElementById('backgroundCanvas');
 	let backCtx = backCanvas.getContext('2d');
@@ -40,7 +41,7 @@ Game.graphics = (function () {
 	}
 
 	function creep(spec) {
-		that = {};
+		let that = {};
 		that.center = { x: spec.center.x, y: spec.center.y };
 		that.hp = spec.hp;
 		that.direction = spec.direction; // up dn lt rt
@@ -172,7 +173,7 @@ Game.graphics = (function () {
 	}
 
 	function tower(spec) {
-		that = {};
+		let that = {};
 		that.type = spec.type
 		that.selected = false;
 		that.center = { x: spec.center.x, y: spec.center.y };
@@ -194,7 +195,7 @@ Game.graphics = (function () {
 		
 		}
 
-		that.upgrade = function(spec){
+		that.upgrade = function(){
 			if(level < 3){
 				that.level ++;
 				that.damage = that.level * 10;
@@ -203,8 +204,8 @@ Game.graphics = (function () {
 			}
 		}
 
-		that.update = function () {
-
+		that.update = function (elapsedTime) {
+			
 		}
 
 		return that;
