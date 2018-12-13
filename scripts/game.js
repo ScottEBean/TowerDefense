@@ -14,10 +14,14 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 	let cancelNextRequest = false;
 
 	let grid = new Array(15);
+	let go = false;
 	let lives = 10;
 	let score = 1000;
 	let drawGameGrid = true;
 	let menuSelectedTower = [0, 0, 0, 0];
+	let lrPath = new Array(15);
+	let tbPath = new Array(15);
+	let wave1 = []
 
 	function deselectGrid() {
 		for (let i = 0; i < grid.length; i++) {
@@ -30,6 +34,36 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 				}
 			}
 		}
+	}
+
+	function createPaths(){
+		lrPath[7][13] = 1;
+		lrPath[7][12] = 2;
+		lrPath[7][11] = 3;
+		lrPath[7][10] = 4;
+		lrPath[7][9] = 5;
+		lrPath[7][8] = 6;
+		lrPath[7][7] = 7;
+		lrPath[7][6] = 8;
+		lrPath[7][5] = 9;
+		lrPath[7][4] = 10;
+		lrPath[7][3] = 11;
+		lrPath[7][2] = 12;
+		lrPath[7][1] = 13;
+		lrPath[7][0] = 14;
+	}
+
+	function createWaves(){
+		//Wave 1
+		for (let i = 0; i < 20; i++) {
+				wave.push( graphics.creep({
+					center: {x: -50, y: 375},
+					direction: 'rt',
+					hp = 50,
+					rate: 0,
+					type: i % 2 + 1,
+				}));
+			}
 	}
 
 	function deselectMenu() {
@@ -63,6 +97,10 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		};
 	}
 
+	function getNextDirection(path, pos){
+		if(true){}
+	}
+
 	function gameLoop(currentTime) {
 		let elapsedTime = currentTime - lastTimeStamp;
 		lastTimeStamp = currentTime;
@@ -78,12 +116,10 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		menuCanvas.addEventListener('mousedown', function (e) { selectMenuTower(e) });
 		gameCanvas.addEventListener('mousedown', function (e) { placeTower(e) });
 		gameCanvas.addEventListener('click', function (e){ selectGridCell(e); });
-		// gameCanvas.addEventListener('click', function (e) { selectGridCell(e); getCellTower(e); });
-
 
 		// keyboard.registerCommand(KeyEvent.DOM_VK_U, upgradetower());
 		// keyboard.registerCommand(KeyEvent.DOM_VK_S, sellTower());
-		// keyboard.registerCommand(KeyEvent.DOM_VK_G, startNextLevel());
+		keyboard.registerCommand(KeyEvent.DOM_VK_G, function(){go = true;});
 		keyboard.registerCommand(KeyEvent.DOM_VK_D, function(){deselectMenu(); deselectGrid();})
 		keyboard.registerCommand(KeyEvent.DOM_VK_V, function () {
 			if (drawGameGrid) {
@@ -115,27 +151,37 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 
 			}
 		});
-		initialzeGrid();
+
+		initializeGrids();
+		createPaths();
+		createWaves();
 		graphics.drawGrid();
 		graphics.drawBackground();
 		graphics.drawTowerTypes();
 	}
 
-	function initialzeGrid() {
+	function initializeGrids() {
 		for (var i = 0; i < 15; i++) {
 			grid[i] = new Array(15);
+			lrPath[i] = new Array(15);
+			tbPath[i] = new Array(15);
 		}
 
 		for (var i = 0; i < 15; i++) {
 			for (var j = 0; j < 15; j++) {
 				grid[i][j] = 0;
+				lrPath[i][j] = 225;
+				tbPath[i][j] = 225;
 			}
 		}
 
-		grid[7][0] = 100;
-		grid[7][14] = 100;
-		grid[0][7] = 100;
-		grid[14][7] = 100;
+		lrPath[7][14] = 0;
+		tbPath[14][7] = 0;
+
+		grid[7][0] = 225;
+		grid[7][14] = 225;
+		grid[0][7] = 225;
+		grid[14][7] = 225;
 	}
 
 	function placeTower(e) {
@@ -157,6 +203,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 				fireRate: 1000,
 			});
 
+			lrPath[rowIndex][colIndex] = 225;
+			tbPath[rowIndex][colIndex] = 225;
+
 			score -= 50;
 			return;
 		}
@@ -167,6 +216,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 				type: 2,
 				fireRate: 1000,
 			});
+
+			lrPath[rowIndex][colIndex] = 225;
+			tbPath[rowIndex][colIndex] = 225;
 
 			score -= 50;
 			return;
@@ -179,6 +231,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 				fireRate: 1000,
 			});
 
+			lrPath[rowIndex][colIndex] = 225;
+			tbPath[rowIndex][colIndex] = 225;
+
 			score -= 50;
 			return;
 		}
@@ -189,6 +244,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 				type: 4,
 				fireRate: 1000,
 			});
+
+			lrPath[rowIndex][colIndex] = 225;
+			tbPath[rowIndex][colIndex] = 225;
 
 			score -= 50;
 			return;
@@ -279,9 +337,19 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 					}
 	}
 
+	function setWaveRateInterval(wave, elapsedTime){
+		for (let i = 0; i < wave.length; i++) {
+			if(wave[i].moveRate == 0 && elapsedTime > 750){
+				wave[i].moveRate = 150;
+				return;
+			}
+		}
+	}
+
 	function update(elapsedTime) {
 		mouse.update(elapsedTime);
 		keyboard.update(elapsedTime);
+		setWaveRateInterval(wave1, elapsedTime);
 	}
 
 	return {

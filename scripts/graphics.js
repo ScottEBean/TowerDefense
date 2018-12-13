@@ -41,28 +41,35 @@ Game.graphics = (function () {
 
 	function creep(spec) {
 		let that = {};
+
 		that.center = { x: spec.center.x, y: spec.center.y };
-		that.hp = spec.hp;
 		that.direction = spec.direction; // up dn lt rt
+		that.hp = spec.hp;
+		that.moveRate = spec.rate;
+		that.rotation = spec.rotation;
+		that.type = spec.type;
+		that.img = getCreepImage(that.type, 1);		
+		that.lastUpdate = 0;
+		that.finished = false;
 
-		var image = new Image();
-		var imageReady = false;
-		image.onload = function () { imageReady = true; }
-		image.src = spec.imageSrc;
-
-		that.draw = function () {
-			if (imageReady) {
+		that.draw = function () {			
 				gameCtx.save();
-				gameCtx.translate(spec.center.x, spec.center.y);
-				gameCtx.rotate(spec.rotation);
-				gameCtx.translate(-spec.center.x, -spec.center.y);
+				gameCtx.translate(that.center.x, that.center.y);
+				gameCtx.rotate(that.rotation);
+				gameCtx.translate(-that.center.x, -that.center.y);
 				gameCtx.drawImage(image, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
-				gameCtx.restore();
+				gameCtx.restore();		
 			}
-		}
 
-		that.update = function () {
-
+		that.update = function (elapsedTime, dir) {
+			that.lastUpdate += elapsedTime; 
+			var index = getCreepIndex(that.type, lastUpdate)
+			that.img = getCreepImage(that.type, index);
+			if(resetCreepSeq(type, index)){lastUpdate = 0;}
+			if(dir == 'up'){that.rotation = -Math.PI/2; that.center.y -= that.moveRate/1000;}
+			if(dir == 'dn'){that.rotation = Math.PI/2; that.center.y += that.moveRate/1000;}
+			if(dir == 'lt'){that.rotation = Math.PI; that.center.x -= that.moveRate/1000;}
+			if(dir == 'rt'){that.rotation = 0; that.center.x += that.moveRate/1000;}
 		}
 
 		return that;
@@ -171,46 +178,43 @@ Game.graphics = (function () {
 		gameCtx.restore();
 	}
 
-	function tower(spec) {
-		let that = {};
-		that.type = spec.type
-		that.selected = false;
-		that.center = { x: spec.center.x, y: spec.center.y };
-		that.level = 1;
-		that.damage = that.level * 10;
-		that.rotation = spec.rotation;
-		that.weapon = getWeapon(spec.type, that.level);
-		that.fireRate = spec.fireRate;
-		that.cost = 50;
+	function getCreepImage(type, index) {
+		// groundCreep1
+		if (type == 1 && index == 1) { return Game.assets['groundCreep11']; }
+		if (type == 1 && index == 2) { return Game.assets['groundCreep12']; }
+		if (type == 1 && index == 3) { return Game.assets['groundCreep13']; }
+		if (type == 1 && index == 4) { return Game.assets['groundCreep14']; }
+		// groundCreep2
+		if (type == 2 && index == 1) { return Game.assets['groundCreep21']; }
+		if (type == 2 && index == 2) { return Game.assets['groundCreep22']; }
+		if (type == 2 && index == 3) { return Game.assets['groundCreep23']; }
+		if (type == 2 && index == 4) { return Game.assets['groundCreep24']; }
+		// airCreep
+		if (type == 3 && index == 1) { return Game.assets['airCreep1']; }
+		if (type == 3 && index == 2) { return Game.assets['airCreep2']; }
+		if (type == 3 && index == 3) { return Game.assets['airCreep3']; }
+		if (type == 3 && index == 4) { return Game.assets['airCreep4']; }
+		if (type == 3 && index == 5) { return Game.assets['airCreep5']; }
+		if (type == 3 && index == 6) { return Game.assets['airCreep6']; }
+	}
 
-		that.draw = function () {
-			gameCtx.save();
-			gameCtx.translate(that.center.x, that.center.y);
-			gameCtx.rotate(that.rotation);
-			gameCtx.translate(-that.center.x, -that.center.y);
-			gameCtx.drawImage(base, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
-			gameCtx.drawImage(that.weapon, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
-			if (that.selected) {
-				drawSelectedBox({ x: that.center.x - gridSize / 2, y: that.center.y - gridSize / 2, canvas: 'game' });
-			}
-			gameCtx.restore();
+	function getCreepIndex(type, timeAccumulator) {
+		if(type == 1 && timeAccumulator <= 200){ return 1; }
+		if(type == 1 && timeAccumulator > 200 && timeAccumulator <= 1200){ return 2; }
+		if (type == 1 && timeAccumulator > 1200 && timeAccumulator <= 1400) { return 3; }
+		if (type == 1 && timeAccumulator > 1400) { return 4; }
 
-		}
+		if (type == 2 && timeAccumulator <= 1000) { return 1; }
+		if (type == 2 && timeAccumulator > 1000 && timeAccumulator <= 1200) { return 2; }
+		if (type == 2 && timeAccumulator > 1200 && timeAccumulator <= 1400) { return 3; }
+		if (type == 2 && timeAccumulator > 1400) { return 4; }
 
-		that.upgrade = function () {
-			if (level < 3) {
-				that.level++;
-				that.damage = that.level * 10;
-				that.fireRate -= 250;
-				that.weapon = getWeapon(that.type, that.level)
-			}
-		}
-
-		that.update = function (elapsedTime) {
-
-		}
-
-		return that;
+		if (type == 3 && timeAccumulator <= 1000) { return 1; }
+		if (type == 3 && timeAccumulator > 1000 && timeAccumulator <= 1200) { return 2; }
+		if (type == 3 && timeAccumulator > 1200 && timeAccumulator <= 1300) { return 3; }
+		if (type == 3 && timeAccumulator > 1300 && timeAccumulator <= 2300) { return 4; }
+		if (type == 3 && timeAccumulator > 2300 && timeAccumulator <= 2400) { return 5; }
+		if (type == 3 && timeAccumulator > 2300) { return 6; }
 	}
 
 	function getWeapon(type, level) {
@@ -235,6 +239,61 @@ Game.graphics = (function () {
 			if (level == 3) { return Game.assets['tower43']; }
 		}
 	}
+
+	function resetCreepSeq(type, index){
+		if((type == 1 || type == 2) && index == 4) {return true;}
+		if(type == 3 && index == 6) {return true;}
+		return false;
+	}
+
+	function tower(spec) {
+		let that = {};
+
+		that.center = { x: spec.center.x, y: spec.center.y };
+		that.cost = 50;
+		that.damage = that.level * 10;
+		that.fireRate = spec.fireRate;
+		that.level = 1;
+		that.range = 75;
+		that.rotation = spec.rotation;
+		that.selected = false;
+		that.type = spec.type
+		that.weapon = getWeapon(spec.type, that.level);
+
+		that.draw = function () {
+			gameCtx.save();
+			gameCtx.translate(that.center.x, that.center.y);
+			gameCtx.rotate(that.rotation);
+			gameCtx.translate(-that.center.x, -that.center.y);
+			gameCtx.drawImage(base, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
+			gameCtx.drawImage(that.weapon, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
+			if (that.selected) {
+				drawSelectedBox({ x: that.center.x - gridSize / 2, y: that.center.y - gridSize / 2, canvas: 'game' });
+			}
+			gameCtx.restore();
+
+		}
+
+		that.upgrade = function () {
+			if (level < 3) {
+				that.level++;
+				that.damage = that.level * 10;
+				that.fireRate -= 250;
+				that.range += 50;
+				that.weapon = getWeapon(that.type, that.level)
+			}
+		}
+
+		that.update = function (elapsedTime) {
+
+		}
+
+		return that;
+	}
+
+	
+
+
 
 	return {
 		clear: clear,
