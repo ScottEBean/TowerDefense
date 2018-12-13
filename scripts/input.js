@@ -26,7 +26,6 @@ Game.input = (function () {
 			let event;
 			let handler;
 
-			//
 			// Process the mouse events for each of the different kinds of handlers
 			for (event = 0; event < that.mouseDown.length; event++) {
 				for (handler = 0; handler < that.handlersDown.length; handler++) {
@@ -46,8 +45,6 @@ Game.input = (function () {
 				}
 			}
 
-
-			//
 			// Now that we have processed all the inputs, reset everything back to the empty state
 			that.mouseDown.length = 0;
 			that.mouseUp.length = 0;
@@ -88,18 +85,14 @@ Game.input = (function () {
 		}
 
 		// ------------------------------------------------------------------
-		//
 		// Allows the client code to register a keyboard handler
-		//
 		// ------------------------------------------------------------------
 		that.registerCommand = function (key, handler) {
 			that.handlers.push({ key: key, handler: handler });
 		};
 
 		// ------------------------------------------------------------------
-		//
 		// Allows the client to invoke all the handlers for the registered key/handlers.
-		//
 		// ------------------------------------------------------------------
 		that.update = function (elapsedTime) {
 			let key = 0;
@@ -111,7 +104,6 @@ Game.input = (function () {
 			}
 		};
 
-		//
 		// These are used to keep track of which keys are currently pressed
 		window.addEventListener('keydown', keyPress);
 		window.addEventListener('keyup', keyRelease);

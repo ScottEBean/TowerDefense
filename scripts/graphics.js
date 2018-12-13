@@ -121,7 +121,7 @@ Game.graphics = (function () {
 		backCtx.restore();
 		backCtx.setLineDash([]);
 	}
-	
+
 	function drawLives(lives) {
 		menuCtx.font = '15px Roboto';
 		menuCtx.fillStyle = cyanStrokeFill;
@@ -142,8 +142,14 @@ Game.graphics = (function () {
 			menuCtx.beginPath();
 			menuCtx.lineWidth = 2;
 			menuCtx.strokeStyle = 'rgba(255, 0, 0, 1)';
-			menuCtx.rect(spec.x, spec.y, gridSize, gridSize);
+			menuCtx.rect(spec.x, spec.y, gridSize + 3 , gridSize + 3);
 			menuCtx.stroke();
+		}else{
+			gameCtx.beginPath();
+			gameCtx.lineWidth = 2;
+			gameCtx.strokeStyle = 'rgba(255, 0, 0, 1)';
+			gameCtx.rect(spec.x, spec.y, gridSize + 3, gridSize + 3);
+			gameCtx.stroke();
 		}
 	}
 
@@ -167,21 +173,23 @@ Game.graphics = (function () {
 
 	function tower(spec) {
 		that = {};
+		that.type = spec.type
 		that.selected = false;
 		that.center = { x: spec.center.x, y: spec.center.y };
 		that.level = 1;
 		that.damage = that.level * 10;
 		that.rotation = spec.rotation;
-		that.weapon = spec.weapon;
+		that.weapon = getWeapon(spec.type, that.level);		
 		that.fireRate = spec.fireRate;
+		that.cost = 50;
 
 		that.draw = function () {
 				gameCtx.save();
-				gameCtx.translate(spec.center.x, spec.center.y);
-				gameCtx.rotate(spec.rotation);
-				gameCtx.translate(-spec.center.x, -spec.center.y);
+				gameCtx.translate(that.center.x, that.center.y);
+				gameCtx.rotate(that.rotation);
+				gameCtx.translate(-that.center.x, -that.center.y);
 				gameCtx.drawImage(base, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
-				gameCtx.drawImage(weapon, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
+				gameCtx.drawImage(that.weapon, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
 				gameCtx.restore();
 		
 		}
@@ -191,7 +199,7 @@ Game.graphics = (function () {
 				that.level ++;
 				that.damage = that.level * 10;
 				that.fireRate -= 250;
-				that.weapon = spec.weapon;
+				that.weapon = getWeapon(that.type, that.level)
 			}
 		}
 
@@ -202,6 +210,28 @@ Game.graphics = (function () {
 		return that;
 	}
 
+	function getWeapon(type, level){
+		if(type == 1){
+			if(level == 1){ return Game.assets['tower11'];}
+			if(level == 2){ return Game.assets['tower12'];}
+			if(level == 3){ return Game.assets['tower13'];}
+		}
+		if (type == 2) {
+			if (level == 1) { return Game.assets['tower21']; }
+			if (level == 2) { return Game.assets['tower22']; }
+			if (level == 3) { return Game.assets['tower23']; }
+		}
+		if (type == 3) {
+			if (level == 1) { return Game.assets['tower31']; }
+			if (level == 2) { return Game.assets['tower32']; }
+			if (level == 3) { return Game.assets['tower33']; }
+		}
+		if (type == 4) {
+			if (level == 1) { return Game.assets['tower41']; }
+			if (level == 2) { return Game.assets['tower42']; }
+			if (level == 3) { return Game.assets['tower43']; }
+		}
+	}
 
 	return {
 		clear: clear,

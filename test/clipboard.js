@@ -10,7 +10,7 @@ function createGrid() {
   }
 
   for (var i = 0; i < 15; i++) {
-    for (var j = 0; j < 15, j++) {
+    for (var j = 0; j < 15; j++) {
       grid[i][j] = 0;
       top[i][j] = 0;
       leftPath[i][j] = 0;
