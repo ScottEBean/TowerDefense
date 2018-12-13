@@ -26,11 +26,10 @@ Game.graphics = (function () {
 	}
 
 	function clearBackground() {
-		// gameCtx.save();
+		gameCtx.save();
 		gameCtx.setTransform(1, 0, 0, 1, 0, 0);
 		gameCtx.clearRect(0, 0, backCanvas.width, backCanvas.height);
-		// gameCtx.restore();
-		drawBackgroundBorder();
+		gameCtx.restore();
 	}
 
 	function clearMenu() {
@@ -138,29 +137,29 @@ Game.graphics = (function () {
 		menuCtx.fillText(scoreText, 10, gameCanvas.height - 10);
 	}
 
-	function drawSelectedBox(spec){
-		if(spec.canvas === 'menu'){
+	function drawSelectedBox(spec) {
+		if (spec.canvas === 'menu') {
 			menuCtx.beginPath();
-			menuCtx.lineWidth = 2;
-			menuCtx.strokeStyle = 'rgba(255, 0, 0, 1)';
-			menuCtx.rect(spec.x, spec.y, gridSize + 3 , gridSize + 3);
+			menuCtx.lineWidth = 1;
+			menuCtx.strokeStyle = 'rgba(255, 0, 0, 0.75)';
+			menuCtx.rect(spec.x, spec.y, gridSize + 2, gridSize + 2);
 			menuCtx.stroke();
-		}else{
+		} else {
 			gameCtx.beginPath();
-			gameCtx.lineWidth = 2;
-			gameCtx.strokeStyle = 'rgba(255, 0, 0, 1)';
-			gameCtx.rect(spec.x, spec.y, gridSize + 3, gridSize + 3);
+			gameCtx.lineWidth = 1;
+			gameCtx.strokeStyle = 'rgba(255, 0, 0, 0.75)';
+			gameCtx.rect(spec.x, spec.y, gridSize + 2, gridSize + 2);
 			gameCtx.stroke();
 		}
 	}
 
-	function drawTowerTypes() {		
+	function drawTowerTypes() {
 		let gt1 = Game.assets['tower11'];
 		let gt2 = Game.assets['tower21'];
 		let at1 = Game.assets['tower31'];
 		let at2 = Game.assets['tower41'];
 
-		menuCtx.save();	
+		menuCtx.save();
 		menuCtx.drawImage(base, 50, 50, 50, 50);
 		menuCtx.drawImage(gt1, 50, 50, 50, 50)
 		menuCtx.drawImage(base, 150, 50, 50, 50);
@@ -168,8 +167,8 @@ Game.graphics = (function () {
 		menuCtx.drawImage(base, 50, 150, 50, 50);
 		menuCtx.drawImage(at1, 50, 150, 50, 50)
 		menuCtx.drawImage(base, 150, 150, 50, 50);
-		menuCtx.drawImage(at2, 150, 150, 50, 50)		
-		gameCtx.restore();		
+		menuCtx.drawImage(at2, 150, 150, 50, 50)
+		gameCtx.restore();
 	}
 
 	function tower(spec) {
@@ -180,24 +179,27 @@ Game.graphics = (function () {
 		that.level = 1;
 		that.damage = that.level * 10;
 		that.rotation = spec.rotation;
-		that.weapon = getWeapon(spec.type, that.level);		
+		that.weapon = getWeapon(spec.type, that.level);
 		that.fireRate = spec.fireRate;
 		that.cost = 50;
 
 		that.draw = function () {
-				gameCtx.save();
-				gameCtx.translate(that.center.x, that.center.y);
-				gameCtx.rotate(that.rotation);
-				gameCtx.translate(-that.center.x, -that.center.y);
-				gameCtx.drawImage(base, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
-				gameCtx.drawImage(that.weapon, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
-				gameCtx.restore();
-		
+			gameCtx.save();
+			gameCtx.translate(that.center.x, that.center.y);
+			gameCtx.rotate(that.rotation);
+			gameCtx.translate(-that.center.x, -that.center.y);
+			gameCtx.drawImage(base, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
+			gameCtx.drawImage(that.weapon, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
+			if (that.selected) {
+				drawSelectedBox({ x: that.center.x - gridSize / 2, y: that.center.y - gridSize / 2, canvas: 'game' });
+			}
+			gameCtx.restore();
+
 		}
 
-		that.upgrade = function(){
-			if(level < 3){
-				that.level ++;
+		that.upgrade = function () {
+			if (level < 3) {
+				that.level++;
 				that.damage = that.level * 10;
 				that.fireRate -= 250;
 				that.weapon = getWeapon(that.type, that.level)
@@ -205,17 +207,17 @@ Game.graphics = (function () {
 		}
 
 		that.update = function (elapsedTime) {
-			
+
 		}
 
 		return that;
 	}
 
-	function getWeapon(type, level){
-		if(type == 1){
-			if(level == 1){ return Game.assets['tower11'];}
-			if(level == 2){ return Game.assets['tower12'];}
-			if(level == 3){ return Game.assets['tower13'];}
+	function getWeapon(type, level) {
+		if (type == 1) {
+			if (level == 1) { return Game.assets['tower11']; }
+			if (level == 2) { return Game.assets['tower12']; }
+			if (level == 3) { return Game.assets['tower13']; }
 		}
 		if (type == 2) {
 			if (level == 1) { return Game.assets['tower21']; }

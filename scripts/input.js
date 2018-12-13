@@ -2,9 +2,11 @@ Game.input = (function () {
 
 	function Mouse() {
 		let that = {
+			mouseClick: [],
 			mouseDown: [],
 			mouseUp: [],
 			mouseMove: [],
+			handlersClick:[],
 			handlersDown: [],
 			handlersUp: [],
 			handlersMove: []
@@ -22,11 +24,21 @@ Game.input = (function () {
 			that.mouseMove.push(e);
 		}
 
+		function mouseClick(e){
+			that.mouseClick.push(e);
+		}
+
 		that.update = function (elapsedTime) {
 			let event;
 			let handler;
 
 			// Process the mouse events for each of the different kinds of handlers
+			for (event = 0; event < that.mouseClick.length; event++) {
+				for (handler = 0; handler < that.handlersClick.length; handler++) {
+					that.handlersClick[handler](that.mouseClick[event], elapsedTime);
+				}
+			}
+
 			for (event = 0; event < that.mouseDown.length; event++) {
 				for (handler = 0; handler < that.handlersDown.length; handler++) {
 					that.handlersDown[handler](that.mouseDown[event], elapsedTime);
@@ -46,6 +58,7 @@ Game.input = (function () {
 			}
 
 			// Now that we have processed all the inputs, reset everything back to the empty state
+			that.mouseClick.length = 0;
 			that.mouseDown.length = 0;
 			that.mouseUp.length = 0;
 			that.mouseMove.length = 0;
@@ -62,7 +75,8 @@ Game.input = (function () {
 				that.handlersMove.push(handler);
 			}
 		};
-
+		
+		window.addEventListener('mouseClick', mouseClick);
 		window.addEventListener('mousedown', mouseDown);
 		window.addEventListener('mouseup', mouseUp);
 		window.addEventListener('mousemove', mouseMove);
