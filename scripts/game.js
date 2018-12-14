@@ -1,6 +1,6 @@
 //https://github.com/ScottEBean/TowerDefense.git
 
-Game.screens['game-play'] = (function (input, graphics, records, menu) {
+Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	'use strict';
 
 	let mouseCapture = false;
@@ -11,19 +11,29 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 	let keyboard = input.Keyboard();
 	let mouse = input.Mouse();
 	let lastTimeStamp = performance.now();
-	let timeAccumulator = 0;
 	let cancelNextRequest = false;
+	let drawArcs = false;
 
+	let menuSelectedTower = [0, 0, 0, 0];
 	let grid = new Array(15);
+	let testStack = [];
+	let testStack2 = [];
+	let lrAirStack = [];
+	let lrGrndStack = [];
+	let tbAirStack = [];
+	let tbGndStack = [];
+	let wave1 = 20;
+	let wave2 = 35;
+	let wave3 = 50;
+	let creeps = [];
+
+	let drawGameGrid = true;
 	let go = false;
 	let lives = 10;
 	let score = 1000;
-	let drawGameGrid = true;
-	let menuSelectedTower = [0, 0, 0, 0];
-	let lrPath = new Array(15);
-	let lrStack = [];
-	let tbPath = new Array(15);
-	let wave1 = []
+	let timeAccumulator = 0;
+
+	/*			Methods			*/
 
 	function deselectGrid() {
 		for (let i = 0; i < grid.length; i++) {
@@ -39,51 +49,165 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 	}
 
 	function createPaths() {
-		lrPath[7][13] = 1;
-		lrPath[7][12] = 2;
-		lrPath[7][11] = 3;
-		lrPath[7][10] = 4;
-		lrPath[7][9] = 5;
-		lrPath[7][8] = 6;
-		lrPath[7][7] = 7;
-		lrPath[7][6] = 8;
-		lrPath[7][5] = 9;
-		lrPath[7][4] = 10;
-		lrPath[7][3] = 11;
-		lrPath[7][2] = 12;
-		lrPath[7][1] = 13;
-		lrPath[7][0] = 14;
 
-		lrStack.push({ x: 25, y: 375 });
-		lrStack.push({ x: 75, y: 375 });
-		lrStack.push({ x: 125, y: 375 });
-		lrStack.push({ x: 175, y: 375 });
-		lrStack.push({ x: 225, y: 375 });
-		lrStack.push({ x: 275, y: 375 });
-		lrStack.push({ x: 325, y: 375 });
-		lrStack.push({ x: 375, y: 375 });
-		lrStack.push({ x: 425, y: 375 });
-		lrStack.push({ x: 475, y: 375 });
-		lrStack.push({ x: 525, y: 375 });
-		lrStack.push({ x: 575, y: 375 });
-		lrStack.push({ x: 625, y: 375 });
-		lrStack.push({ x: 675, y: 375 });
-		lrStack.push({ x: 725, y: 375 });
+		testStack.push({ x: 25, y: 375 });
+		testStack.push({ x: 75, y: 375 });
+		testStack.push({ x: 125, y: 375 });
+		testStack.push({ x: 175, y: 375 });
+		testStack.push({ x: 225, y: 375 });
+		testStack.push({ x: 275, y: 375 });
+		testStack.push({ x: 325, y: 375 });
+		testStack.push({ x: 375, y: 375 });
+		testStack.push({ x: 425, y: 375 });
+		testStack.push({ x: 475, y: 375 });
+		testStack.push({ x: 525, y: 375 });
+		testStack.push({ x: 575, y: 375 });
+		testStack.push({ x: 625, y: 375 });
+		testStack.push({ x: 675, y: 375 });
+		testStack.push({ x: 725, y: 375 });
+
+		testStack2.push({ x: 375, y: 25 });
+		testStack2.push({ x: 375, y: 75 });
+		testStack2.push({ x: 375, y: 125 });
+		testStack2.push({ x: 375, y: 175 });
+		testStack2.push({ x: 375, y: 225 });
+		testStack2.push({ x: 375, y: 275 });
+		testStack2.push({ x: 375, y: 325 });
+		testStack2.push({ x: 375, y: 375 });
+		testStack2.push({ x: 375, y: 425 });
+		testStack2.push({ x: 375, y: 475 });
+		testStack2.push({ x: 375, y: 525 });
+		testStack2.push({ x: 375, y: 575 });
+		testStack2.push({ x: 375, y: 625 });
+		testStack2.push({ x: 375, y: 675 });
+		testStack2.push({ x: 375, y: 725 });
+
+		lrAirStack.push({ x: 25, y: 375 });
+		lrAirStack.push({ x: 75, y: 375 });
+		lrAirStack.push({ x: 125, y: 375 });
+		lrAirStack.push({ x: 175, y: 375 });
+		lrAirStack.push({ x: 225, y: 375 });
+		lrAirStack.push({ x: 275, y: 375 });
+		lrAirStack.push({ x: 325, y: 375 });
+		lrAirStack.push({ x: 375, y: 375 });
+		lrAirStack.push({ x: 425, y: 375 });
+		lrAirStack.push({ x: 475, y: 375 });
+		lrAirStack.push({ x: 525, y: 375 });
+		lrAirStack.push({ x: 575, y: 375 });
+		lrAirStack.push({ x: 625, y: 375 });
+		lrAirStack.push({ x: 675, y: 375 });
+		lrAirStack.push({ x: 725, y: 375 });
+
+		tbAirStack.push({ x: 375, y: 25 });
+		tbAirStack.push({ x: 375, y: 75 });
+		tbAirStack.push({ x: 375, y: 125 });
+		tbAirStack.push({ x: 375, y: 175 });
+		tbAirStack.push({ x: 375, y: 225 });
+		tbAirStack.push({ x: 375, y: 275 });
+		tbAirStack.push({ x: 375, y: 325 });
+		tbAirStack.push({ x: 375, y: 375 });
+		tbAirStack.push({ x: 375, y: 425 });
+		tbAirStack.push({ x: 375, y: 475 });
+		tbAirStack.push({ x: 375, y: 525 });
+		tbAirStack.push({ x: 375, y: 575 });
+		tbAirStack.push({ x: 375, y: 625 });
+		tbAirStack.push({ x: 375, y: 675 });
+		tbAirStack.push({ x: 375, y: 725 });
+
 	}
 
 	function createWaves() {
-		//Wave 1
-		for (let i = 0; i < 20; i++) {
-				wave1.push(graphics.creep({
-					center: {x: 0, y: 375},
-					direction: 'rt',
-					endpoint: {x: 725, y: 375},
-					hp: 50,
-					rate: 0,
-					type: i % 2 + 1,
-					path: lrStack,
-				}));
-			}
+		// Wave 1 - All ground left
+		for (let i = 0; i < wave1; i++) {
+			creeps.push(graphics.creep({
+				center: { x: 0, y: 375 },
+				direction: 'rt',
+				endpoint: { x: 725, y: 375 },
+				hp: 50,
+				rate: 0,
+				type: 1,
+				path: testStack,
+				wave: 1
+			}));
+		}
+
+		// // Wave 2 - All ground, left and top
+		// for (let i = 0; i < wave2; i++) {
+		// 	var ctype = Random.nextRange(1, 2);
+		// 	var rstack = Random.nextRange(1, 2);
+		// 	var stack = null;
+		// 	var endP = null;
+		// 	var startP = null;
+		// 	var dir = null;
+
+		// 	if (rstack === 1) {
+		// 		startP = {x: 0, y: 375};
+		// 		endP = { x: 725, y: 375 };
+		// 		stack = testStack
+		// 		dir = 'rt';
+		// 	}
+		// 	else {
+		// 		startP = { x: 375, y: 0 };
+		// 		endP = { x: 375, y:  725};
+		// 		stack = testStack2
+		// 		dir = 'dn';
+		// 	}
+		// 	creeps.push(graphics.creep({
+		// 		center: startP,
+		// 		direction: dir,
+		// 		endpoint: endP,
+		// 		hp: 50,
+		// 		rate: 0,
+		// 		type: 2,
+		// 		path: stack,
+		// 		wave: 2
+		// 	}));
+		// }
+
+		// // Wave 3 - ground and air left and top
+		// for (let i = 0; i < wave3; i++) {
+		// 	var cType = Random.nextRange(1, 3);
+		// 	var rstack = Random.nextRange(1, 2);
+		// 	var stack = null;
+		// 	var endP = null;
+		// 	var startP = null;
+		// 	var dir = null;
+
+		// 	if (rstack === 1 && cType < 3) {
+		// 		startP = { x: 0, y: 375 };
+		// 		endP = { x: 725, y: 375 };
+		// 		stack = testStack;
+		// 		dir = 'rt';
+		// 	}
+		// 	else if(rstack === 2 && ctype < 3){
+		// 		startP = { x: 375, y: 0 };
+		// 		endP = { x: 375, y: 725 };
+		// 		stack = testStack2;
+		// 		dir = 'dn';
+		// 	}
+		// 	else if(rstack === 1 && ctype === 3){
+		// 		startP = { x: 0, y: 375 };
+		// 		endP = { x: 725, y: 375 };
+		// 		stack = lrAirStack;
+		// 		dir = 'rt';
+		// 	}else{
+		// 		startP = { x: 375, y: 0 };
+		// 		endP = { x: 375, y: 725 };
+		// 		stack = tbAirStack
+		// 		dir = 'dn';
+		// 	}
+
+		// 	creeps.push(graphics.creep({
+		// 		center: startP,
+		// 		direction: dir,
+		// 		endpoint: endP,
+		// 		hp: 50,
+		// 		rate: 0,
+		// 		type: 3,
+		// 		path: stack,
+		// 		wave: 3
+		// 	}));
+		// }
 	}
 
 	function deselectMenu() {
@@ -136,6 +260,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 
 		// keyboard.registerCommand(KeyEvent.DOM_VK_U, upgradetower());
 		// keyboard.registerCommand(KeyEvent.DOM_VK_S, sellTower());
+		keyboard.registerCommand(KeyEvent.DOM_VK_R, function () { drawArcs = true; });
+		keyboard.registerCommand(KeyEvent.DOM_VK_T, function () { drawArcs = false; });
 		keyboard.registerCommand(KeyEvent.DOM_VK_G, function () {
 			go = true;
 		});
@@ -147,13 +273,15 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 				graphics.drawBackgroundBorder();
 				return;
 			}
-
+		});
+		keyboard.registerCommand(KeyEvent.DOM_VK_B, function () {
 			if (!drawGameGrid) {
 				drawGameGrid = true;
 				graphics.drawGrid();
 				return;
 			}
 		});
+
 		keyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function () {
 			cancelNextRequest = true;
 			menu.showScreen('main-menu');
@@ -182,20 +310,13 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 	function initializeGrids() {
 		for (var i = 0; i < 15; i++) {
 			grid[i] = new Array(15);
-			lrPath[i] = new Array(15);
-			tbPath[i] = new Array(15);
 		}
 
 		for (var i = 0; i < 15; i++) {
 			for (var j = 0; j < 15; j++) {
 				grid[i][j] = 0;
-				lrPath[i][j] = 225;
-				tbPath[i][j] = 225;
 			}
 		}
-
-		lrPath[7][14] = 0;
-		tbPath[14][7] = 0;
 
 		grid[7][0] = 225;
 		grid[7][14] = 225;
@@ -217,7 +338,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		if (menuSelectedTower[0] == 1 && score > 50) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
-				rotation: 0,
+				rate: 20 * Math.PI / 1000,
+				rotation: Math.PI / 2,
 				type: 1,
 				fireRate: 1000,
 			});
@@ -231,7 +353,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		if (menuSelectedTower[1] == 1 && score > 100) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
-				rotation: 0,
+				rate: 20 * Math.PI / 1000,
+				rotation: Math.PI / 2,
 				type: 2,
 				fireRate: 1000,
 			});
@@ -245,7 +368,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		if (menuSelectedTower[2] == 1 && score > 50) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
-				rotation: 0,
+				rate: 20 * Math.PI / 1000,
+				rotation: Math.PI / 2,
 				type: 3,
 				fireRate: 1000,
 			});
@@ -259,7 +383,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		if (menuSelectedTower[3] == 1 && score > 100) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
-				rotation: 0,
+				rate: 20 * Math.PI / 1000,
+				rotation: Math.PI / 2,
 				type: 4,
 				fireRate: 1000,
 			});
@@ -274,6 +399,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		return;
 	}
 
+	// Used for debugging in the browser :(
 	function printGrid() {
 		var line = "";
 		for (let i = 0; i < grid.length; i++) {
@@ -300,8 +426,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 
 		//creeps
 		if (go) {
-			for (let i = 0; i < wave1.length; i++) {
-				wave1[i].draw();
+			for (let i = 0; i < creeps.length; i++) {				
+				creeps[i].draw();
 			}
 		}
 
@@ -366,11 +492,11 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 	}
 
 	function setWaveRateInterval(wave, elapsedTime) {
-		timeAccumulator +=elapsedTime;
+		timeAccumulator += elapsedTime;
 		for (let i = 0; i < wave.length; i++) {
-			if (wave[i].moveRate == 0 && timeAccumulator > 5000) {
+			if (wave[i].moveRate == 0 && timeAccumulator > 1000) {
 				timeAccumulator = 0;
-				wave[i].moveRate = 500;
+				wave[i].moveRate = 3000;
 				return;
 			}
 		}
@@ -380,10 +506,22 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		mouse.update(elapsedTime);
 		keyboard.update(elapsedTime);
 		if (go) {
-			setWaveRateInterval(wave1, elapsedTime);
+			setWaveRateInterval(creeps, elapsedTime);
 		}
-		for (let i = 0; i < wave1.length; i++) {
-			wave1[i].update(elapsedTime);
+
+		//towers
+		for (let i = 0; i < grid.length; i++) {
+			for (let j = 0; j < grid.length; j++) {
+				if (typeof (grid[i][j]) === 'object') {
+					grid[i][j].update(elapsedTime, drawArcs);
+				}
+			}
+		}
+
+		// creeps
+		// need to handle waves
+		for (let i = 0; i < wave1; i++) {
+			creeps[i].update(elapsedTime);
 		}
 	}
 

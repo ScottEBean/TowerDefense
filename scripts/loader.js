@@ -27,7 +27,7 @@ Game.loader = (function() {
 			message: 'screens loaded',
 			onComplete: null
 		}, {
-			scripts: ['input', 'records', 'random'],
+			scripts: ['input', 'records', 'random', 'helper'],
 			message: 'helpers loaded',
 			onComplete: null
 		}, {

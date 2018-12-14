@@ -2,7 +2,7 @@
 // This is the graphics object.  The various rendering components
 // are located here.
 // ------------------------------------------------------------------
-Game.graphics = (function () {
+Game.graphics = (function (helper) {
 	'use strict';
 
 	let backCanvas = document.getElementById('backgroundCanvas');
@@ -18,31 +18,7 @@ Game.graphics = (function () {
 	//------------------------------------------------------------------
 	// Public function that allows the client code to clear the canvas.
 	//------------------------------------------------------------------
-	function calculateDirection(path, row, col) {
-
-
-		let nextDir = null;
-		let nextMin = 225
-
-		if (row - 1 >= 0 && path[row - 1][col] < nextMin) {
-			nextMin = path[row - 1][col];
-			nextDir = 'up';
-		}
-		if (row + 1 <= 14 && path[row + 1][col] < nextMin) {
-			nextMin = path[row + 1][col];
-			nextDir = 'dn';
-		}
-		if (col - 1 >= 0 && path[row][col - 1] < nextMin) {
-			nextMin = path[row][col - 1];
-			nextDir = 'lt';
-		}
-		if (col + 1 <= 14 && path[row][col + 1] < nextMin) {
-			nextMin = path[row][col + 1];
-			nextDir = 'rt';
-		}
-
-		return nextDir;
-	}
+	
 
 	function clear() {
 		gameCtx.save();
@@ -91,8 +67,9 @@ Game.graphics = (function () {
 		}
 
 		that.update = function (elapsedTime) {
-			if (Math.abs(that.endpoint.x - that.center.x) < 15 && Math.abs(that.endpoint.y - that.center.y) < 15){
+			if (Math.abs(that.endpoint.x - that.center.x) < 10 && Math.abs(that.endpoint.y - that.center.y) < 15){
 				that.finished = true;
+				console.log("finished")
 			}
 			if (that.finished) { return; }
 			that.lastUpdate += elapsedTime;
@@ -111,12 +88,14 @@ Game.graphics = (function () {
 			let col = Cy / 50; //current col
 			let cellX = Cx + 25; //center.x of current cell
 			let cellY = Cy + 25; //center.y of current cell
-			let Rx = Math.abs(that.path[0].x - Px);
-			let Ry = Math.abs(that.path[0].y - Py)
+			let Rx = Math.abs(currentDest.x - Px);
+			let Ry = Math.abs(currentDest.y - Py)
 
+			
 			if (that.moveRate > 0) {
 				if (that.direction == 'up' && Ry < 3) {
 					that.path.shift();
+					if (that.path.length == 0) { that.center.y -= that.moveRate / 1000; that.finished = true; return;}
 					if (path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // keep going up
 					else if (that.path[0].x < currentDest.x) { that.center.x -= that.moveRate / 1000; } // go lt
 					else if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // go rt
@@ -125,6 +104,7 @@ Game.graphics = (function () {
 
 				if (that.direction == 'dn' && Ry < 3) {
 					that.path.shift();
+					if (that.path.length == 0) { that.center.y += that.moveRate / 1000; that.finished = true; return; }
 					if (that.path[0].y > currentDest.y) { that.center.y += that.moveRate / 1000; } // keep going down
 					else if (that.path[0].x < currentDest.x) { that.center.x -= that.moveRate / 1000; } // go lt
 					else if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // go rt
@@ -133,14 +113,16 @@ Game.graphics = (function () {
 
 				if (that.direction == 'lt' && Rx < 3) {
 					that.path.shift();
+					if (that.path.length == 0) { that.center.x -= that.moveRate / 1000; that.finished = true; return;  }
 					if (that.path[0].x < currentDest.x) { that.center.x -= that.moveRate / 1000; } // keep going lt
 					else if (that.path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // go up
 					else if (that.path[0].y > currentDest.y) { that.center.y += that.moveRate / 1000; } // go dn
 					return;
 				}
 
-				if (that.direction == 'rt' && Rx < 3) {
+				if (that.direction == 'rt' && Rx < 3) {						
 					that.path.shift();
+					if (that.path.length == 0) { that.center.x += that.moveRate / 1000; that.finished = true; return; }
 					if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // keep going rt
 					else if (that.path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // go up
 					else if (that.path[0].y > currentDest.y) { that.center.y += that.moveRate / 1000; } // go dn
@@ -338,24 +320,38 @@ Game.graphics = (function () {
 		that.damage = that.level * 10;
 		that.fireRate = spec.fireRate;
 		that.level = 1;
-		that.range = 75;
-		that.rotation = spec.rotation;
+		that.range = 100;
+		that.rotationRate = spec.rotation;
 		that.selected = false;
 		that.type = spec.type
 		that.weapon = getWeapon(spec.type, that.level);
+		let arcDraw = false;
 
 		that.draw = function () {
 			gameCtx.save();
 			gameCtx.translate(that.center.x, that.center.y);
-			gameCtx.rotate(that.rotation);
+			gameCtx.rotate(that.rotationRate);
 			gameCtx.translate(-that.center.x, -that.center.y);
 			gameCtx.drawImage(base, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
 			gameCtx.drawImage(that.weapon, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
 			if (that.selected) {
 				drawSelectedBox({ x: that.center.x - gridSize / 2, y: that.center.y - gridSize / 2, canvas: 'game' });
 			}
+			if(arcDraw){
+				that.drawArc();
+			}
+
 			gameCtx.restore();
 
+		}
+
+		that.drawArc = function () {
+			gameCtx.fillStyle = 'rgba(0, 255, 255, 0.10)';
+			gameCtx.beginPath();
+			gameCtx.moveTo(that.center.x, that.center.y);
+			gameCtx.arc(that.center.x, that.center.y, that.range, 0, 2 * Math.PI, true);
+			gameCtx.lineTo(spec.center.x, spec.center.y);
+			gameCtx.fill();
 		}
 
 		that.upgrade = function () {
@@ -368,8 +364,19 @@ Game.graphics = (function () {
 			}
 		}
 
-		that.update = function (elapsedTime) {
+		that.update = function (elapsedTime, drawArcs) {
+			arcDraw = drawArcs;
 
+			var result = computeAngle(spec.rotation, spec.center, spec.target);
+			if (testTolerance(result.angle, 0, .01) === false) {
+				if (result.crossProduct > 0) {
+					weaponSprite.rotateRight(spec.rotateRate);
+					spec.rotation += spec.rotateRate;
+				} else {
+					weaponSprite.rotateLeft(spec.rotateRate);
+					spec.rotation -= spec.rotateRate;
+				}
+			}
 		}
 
 		return that;
