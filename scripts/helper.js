@@ -1,4 +1,4 @@
-Game.helper = (function () {
+var Helper = (function () {
   'use strict';
   //------------------------------------------------------------------
   // Returns the magnitude of the 2D cross product.  The sign of the
@@ -22,6 +22,7 @@ Game.helper = (function () {
         y: ptTarget.y - ptCenter.y
       },
       dp,
+      cp,
       angle;
 
     v2.len = Math.sqrt(v2.x * v2.x + v2.y * v2.y);

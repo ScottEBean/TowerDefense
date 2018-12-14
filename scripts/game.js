@@ -16,13 +16,15 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 
 	let menuSelectedTower = [0, 0, 0, 0];
 	let grid = new Array(15);
+	let lrGrid = new Array(15);
+	let tbGrid = new Array(15);
 	let testStack = [];
 	let testStack2 = [];
 	let lrAirStack = [];
-	let lrGrndStack = [];
+	let lrGndStack = [];
 	let tbAirStack = [];
 	let tbGndStack = [];
-	let wave1 = 20;
+	let wave1 = 1;
 	let wave2 = 35;
 	let wave3 = 50;
 	let creeps = [];
@@ -50,37 +52,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 
 	function createPaths() {
 
-		testStack.push({ x: 25, y: 375 });
-		testStack.push({ x: 75, y: 375 });
-		testStack.push({ x: 125, y: 375 });
-		testStack.push({ x: 175, y: 375 });
-		testStack.push({ x: 225, y: 375 });
-		testStack.push({ x: 275, y: 375 });
-		testStack.push({ x: 325, y: 375 });
-		testStack.push({ x: 375, y: 375 });
-		testStack.push({ x: 425, y: 375 });
-		testStack.push({ x: 475, y: 375 });
-		testStack.push({ x: 525, y: 375 });
-		testStack.push({ x: 575, y: 375 });
-		testStack.push({ x: 625, y: 375 });
-		testStack.push({ x: 675, y: 375 });
-		testStack.push({ x: 725, y: 375 });
-
-		testStack2.push({ x: 375, y: 25 });
-		testStack2.push({ x: 375, y: 75 });
-		testStack2.push({ x: 375, y: 125 });
-		testStack2.push({ x: 375, y: 175 });
-		testStack2.push({ x: 375, y: 225 });
-		testStack2.push({ x: 375, y: 275 });
-		testStack2.push({ x: 375, y: 325 });
-		testStack2.push({ x: 375, y: 375 });
-		testStack2.push({ x: 375, y: 425 });
-		testStack2.push({ x: 375, y: 475 });
-		testStack2.push({ x: 375, y: 525 });
-		testStack2.push({ x: 375, y: 575 });
-		testStack2.push({ x: 375, y: 625 });
-		testStack2.push({ x: 375, y: 675 });
-		testStack2.push({ x: 375, y: 725 });
+		lrGndStack = Path.getPath(lrGrid, { x: 0, y: 375 }, { x: 725, y: 375 });
+		tbGndStack = Path.getPath(tbGrid, { x: 375, y: 0 }, { x: 375, y: 725 });
 
 		lrAirStack.push({ x: 25, y: 375 });
 		lrAirStack.push({ x: 75, y: 375 });
@@ -113,7 +86,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		tbAirStack.push({ x: 375, y: 625 });
 		tbAirStack.push({ x: 375, y: 675 });
 		tbAirStack.push({ x: 375, y: 725 });
-
 	}
 
 	function createWaves() {
@@ -125,93 +97,107 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				endpoint: { x: 725, y: 375 },
 				hp: 50,
 				rate: 0,
+				rotation: 0,
 				type: 1,
 				path: testStack,
+				grid: lrGrid,
 				wave: 1
 			}));
 		}
 
-		// // Wave 2 - All ground, left and top
-		// for (let i = 0; i < wave2; i++) {
-		// 	var ctype = Random.nextRange(1, 2);
-		// 	var rstack = Random.nextRange(1, 2);
-		// 	var stack = null;
-		// 	var endP = null;
-		// 	var startP = null;
-		// 	var dir = null;
+		// Wave 2 - All ground, left and top
+		for (let i = 0; i < wave2; i++) {
+			let ctype = Random.nextRange(1, 2);
+			let rstack = Random.nextRange(1, 2);
+			let stack = null;
+			let pathGrid = null;
+			let endP = null;
+			let startP = null;
+			let dir = null;
+			let angle = null;
 
-		// 	if (rstack === 1) {
-		// 		startP = {x: 0, y: 375};
-		// 		endP = { x: 725, y: 375 };
-		// 		stack = testStack
-		// 		dir = 'rt';
-		// 	}
-		// 	else {
-		// 		startP = { x: 375, y: 0 };
-		// 		endP = { x: 375, y:  725};
-		// 		stack = testStack2
-		// 		dir = 'dn';
-		// 	}
-		// 	creeps.push(graphics.creep({
-		// 		center: startP,
-		// 		direction: dir,
-		// 		endpoint: endP,
-		// 		hp: 50,
-		// 		rate: 0,
-		// 		type: 2,
-		// 		path: stack,
-		// 		wave: 2
-		// 	}));
-		// }
+			if (rstack === 1) {
+				startP = { x: 0, y: 375 };
+				endP = { x: 725, y: 375 };
+				stack = testStack
+				pathGrid = lrGrid;
+				dir = 'rt';
+				angle = 0;
+			}
+			else {
+				startP = { x: 375, y: 0 };
+				endP = { x: 375, y: 725 };
+				stack = testStack2;
+				dir = 'dn';
+				angle = Math.PI / 2;
+			}
+			creeps.push(graphics.creep({
+				center: startP,
+				direction: dir,
+				endpoint: endP,
+				hp: 50,
+				rate: 0,
+				rotation: angle,
+				type: 2,
+				path: stack,
+				wave: 2
+			}));
+		}
 
-		// // Wave 3 - ground and air left and top
-		// for (let i = 0; i < wave3; i++) {
-		// 	var cType = Random.nextRange(1, 3);
-		// 	var rstack = Random.nextRange(1, 2);
-		// 	var stack = null;
-		// 	var endP = null;
-		// 	var startP = null;
-		// 	var dir = null;
+		// Wave 3 - ground and air left and top
+		for (let i = 0; i < wave3; i++) {
+			let cType = Random.nextRange(1, 3);
+			let rstack = Random.nextRange(1, 2);
+			let stack = null;
+			let endP = null;
+			let startP = null;
+			let dir = null;
+			let angle = null;
 
-		// 	if (rstack === 1 && cType < 3) {
-		// 		startP = { x: 0, y: 375 };
-		// 		endP = { x: 725, y: 375 };
-		// 		stack = testStack;
-		// 		dir = 'rt';
-		// 	}
-		// 	else if(rstack === 2 && ctype < 3){
-		// 		startP = { x: 375, y: 0 };
-		// 		endP = { x: 375, y: 725 };
-		// 		stack = testStack2;
-		// 		dir = 'dn';
-		// 	}
-		// 	else if(rstack === 1 && ctype === 3){
-		// 		startP = { x: 0, y: 375 };
-		// 		endP = { x: 725, y: 375 };
-		// 		stack = lrAirStack;
-		// 		dir = 'rt';
-		// 	}else{
-		// 		startP = { x: 375, y: 0 };
-		// 		endP = { x: 375, y: 725 };
-		// 		stack = tbAirStack
-		// 		dir = 'dn';
-		// 	}
+			if (rstack === 1 && cType < 3) {
+				startP = { x: 0, y: 375 };
+				endP = { x: 725, y: 375 };
+				stack = testStack;
+				dir = 'rt';
+				angle = 0;
+			}
+			else if (rstack === 2 && cType < 3) {
+				startP = { x: 375, y: 0 };
+				endP = { x: 375, y: 725 };
+				stack = testStack2;
+				dir = 'dn';
+				angle = Math.PI / 2;
+			}
+			else if (rstack === 1 && cType === 3) {
+				startP = { x: 0, y: 375 };
+				endP = { x: 725, y: 375 };
+				stack = lrAirStack;
+				dir = 'rt';
+				angle = 0;
+			} else {
+				startP = { x: 375, y: 0 };
+				endP = { x: 375, y: 725 };
+				stack = tbAirStack
+				dir = 'dn';
+				angle = Math.PI / 2;
+			}
 
-		// 	creeps.push(graphics.creep({
-		// 		center: startP,
-		// 		direction: dir,
-		// 		endpoint: endP,
-		// 		hp: 50,
-		// 		rate: 0,
-		// 		type: 3,
-		// 		path: stack,
-		// 		wave: 3
-		// 	}));
-		// }
+			creeps.push(graphics.creep({
+				center: startP,
+				direction: dir,
+				endpoint: endP,
+				hp: 50,
+				rate: 0,
+				rotation: angle,
+				type: 3,
+				path: stack,
+				wave: 3
+			}));
+		}
 	}
 
 	function deselectMenu() {
-		for (var i = 0; i < menuSelectedTower.length; i++) {
+		for (let i = 0; i < menuSelectedTower.length; i++) {
 			menuSelectedTower[i] = 0;
 		}
 	}
@@ -234,7 +220,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	}
 
 	function getMousePos(canvas, e) {
-		var rect = canvas.getBoundingClientRect();
+		let rect = canvas.getBoundingClientRect();
 		return {
 			x: e.clientX - rect.left,
 			y: e.clientY - rect.top
@@ -308,13 +294,17 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	}
 
 	function initializeGrids() {
-		for (var i = 0; i < 15; i++) {
+		for (let i = 0; i < 15; i++) {
 			grid[i] = new Array(15);
+			lrGrid[i] = new Array(15);
+			tbGrid[i] = new Array(15);
 		}
 
-		for (var i = 0; i < 15; i++) {
-			for (var j = 0; j < 15; j++) {
+		for (let i = 0; i < 15; i++) {
+			for (let j = 0; j < 15; j++) {
 				grid[i][j] = 0;
+				lrGrid[i][j] = 225;
+				tbGrid[i][j] = 225;
 			}
 		}
 
@@ -322,6 +312,10 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		grid[7][14] = 225;
 		grid[0][7] = 225;
 		grid[14][7] = 225;
+
+
+		lrGrid = Path.updateGrid(lrGrid, { x: 725, y: 375 });
+		tbGrid = Path.updateGrid(tbGrid, { x: 375, y: 725 });
 	}
 
 	function placeTower(e) {
@@ -338,14 +332,16 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		if (menuSelectedTower[0] == 1 && score > 50) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
-				rate: 20 * Math.PI / 1000,
+				rate: 30 * Math.PI / 1000,
 				rotation: Math.PI / 2,
 				type: 1,
 				fireRate: 1000,
 			});
 
-			lrPath[rowIndex][colIndex] = 225;
-			tbPath[rowIndex][colIndex] = 225;
+			lrGrid[rowIndex][colIndex] = 1500;
+			tbGrid[rowIndex][colIndex] = 1500;
+			lrGrid = Path.updateGrid(lrGrid, { x: 725, y: 375 });
+			tbGrid = Path.updateGrid(tbGrid, { x: 375, y: 725 });
 
 			score -= 50;
 			return;
@@ -353,14 +349,16 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		if (menuSelectedTower[1] == 1 && score > 100) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
-				rate: 20 * Math.PI / 1000,
+				rate: 30 * Math.PI / 1000,
 				rotation: Math.PI / 2,
 				type: 2,
 				fireRate: 1000,
 			});
 
-			lrPath[rowIndex][colIndex] = 225;
-			tbPath[rowIndex][colIndex] = 225;
+			lrGrid[rowIndex][colIndex] = 1500;
+			tbGrid[rowIndex][colIndex] = 1500;
+			lrGrid = Path.updateGrid(lrGrid, { x: 725, y: 375 });
+			tbGrid = Path.updateGrid(tbGrid, { x: 375, y: 725 });
 
 			score -= 50;
 			return;
@@ -368,14 +366,16 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		if (menuSelectedTower[2] == 1 && score > 50) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
-				rate: 20 * Math.PI / 1000,
+				rate: 30 * Math.PI / 1000,
 				rotation: Math.PI / 2,
 				type: 3,
 				fireRate: 1000,
 			});
 
-			lrPath[rowIndex][colIndex] = 225;
-			tbPath[rowIndex][colIndex] = 225;
+			lrGrid[rowIndex][colIndex] = 1500;
+			tbGrid[rowIndex][colIndex] = 1500;
+			lrGrid = Path.updateGrid(lrGrid, { x: 725, y: 375 });
+			tbGrid = Path.updateGrid(tbGrid, { x: 375, y: 725 });
 
 			score -= 50;
 			return;
@@ -389,8 +389,10 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				fireRate: 1000,
 			});
 
-			lrPath[rowIndex][colIndex] = 225;
-			tbPath[rowIndex][colIndex] = 225;
+			lrGrid[rowIndex][colIndex] = 1500;
+			tbGrid[rowIndex][colIndex] = 1500;
+			lrGrid = Path.updateGrid(lrGrid, { x: 725, y: 375 });
+			tbGrid = Path.updateGrid(tbGrid, { x: 375, y: 725 });
 
 			score -= 50;
 			return;
@@ -401,7 +403,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 
 	// Used for debugging in the browser :(
 	function printGrid() {
-		var line = "";
+		let line = "";
 		for (let i = 0; i < grid.length; i++) {
 			for (let j = 0; j < grid.length; j++) {
 				line += grid[i][j] + " ";
@@ -415,8 +417,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		graphics.clear();
 
 		//towers
-		for (var i = 0; i < grid.length; i++) {
-			for (var j = 0; j < grid.length; j++) {
+		for (let i = 0; i < grid.length; i++) {
+			for (let j = 0; j < grid.length; j++) {
 				if (grid[i][j] != 0 && grid[i][j] != 225 && grid[i][j] != 1) {
 					grid[i][j].draw();
 				}
@@ -426,8 +428,10 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 
 		//creeps
 		if (go) {
-			for (let i = 0; i < creeps.length; i++) {				
-				creeps[i].draw();
+			for (let i = 0; i < creeps.length; i++) {
+				if (typeof creeps[i] === 'object') {
+					creeps[i].draw();
+				}
 			}
 		}
 
@@ -496,7 +500,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		for (let i = 0; i < wave.length; i++) {
 			if (wave[i].moveRate == 0 && timeAccumulator > 1000) {
 				timeAccumulator = 0;
-				wave[i].moveRate = 3000;
+				wave[i].moveRate = 1000;
 				return;
 			}
 		}
@@ -505,6 +509,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	function update(elapsedTime) {
 		mouse.update(elapsedTime);
 		keyboard.update(elapsedTime);
+		lrGrid = Path.updateGrid(lrGrid, { x: 725, y: 375 });
+		tbGrid = Path.updateGrid(tbGrid, { x: 375, y: 725 });
 		if (go) {
 			setWaveRateInterval(creeps, elapsedTime);
 		}
@@ -513,7 +519,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		for (let i = 0; i < grid.length; i++) {
 			for (let j = 0; j < grid.length; j++) {
 				if (typeof (grid[i][j]) === 'object') {
-					grid[i][j].update(elapsedTime, drawArcs);
+					grid[i][j].update(elapsedTime, drawArcs, creeps);
 				}
 			}
 		}
@@ -521,7 +527,22 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		// creeps
 		// need to handle waves
 		for (let i = 0; i < wave1; i++) {
-			creeps[i].update(elapsedTime);
+			if (creeps[i].finished && creeps[i].hp > 0) {
+				lives--;
+				creeps[i] = 0;
+			}
+			if (creeps[i].finished) {
+				score += 50;
+				creeps[i] = 0;
+			}
+			if (typeof creeps[i] === 'object') {
+				if (creeps[i].endpoint.x == 725) {
+					creeps[i].update(elapsedTime, lrGrid);
+
+				} else {
+					creeps[i].update(elapsedTime, tbGrid);
+				}
+			}
 		}
 	}
 
