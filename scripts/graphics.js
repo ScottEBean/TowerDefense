@@ -18,6 +18,32 @@ Game.graphics = (function () {
 	//------------------------------------------------------------------
 	// Public function that allows the client code to clear the canvas.
 	//------------------------------------------------------------------
+	function calculateDirection(path, row, col) {
+
+
+		let nextDir = null;
+		let nextMin = 225
+
+		if (row - 1 >= 0 && path[row - 1][col] < nextMin) {
+			nextMin = path[row - 1][col];
+			nextDir = 'up';
+		}
+		if (row + 1 <= 14 && path[row + 1][col] < nextMin) {
+			nextMin = path[row + 1][col];
+			nextDir = 'dn';
+		}
+		if (col - 1 >= 0 && path[row][col - 1] < nextMin) {
+			nextMin = path[row][col - 1];
+			nextDir = 'lt';
+		}
+		if (col + 1 <= 14 && path[row][col + 1] < nextMin) {
+			nextMin = path[row][col + 1];
+			nextDir = 'rt';
+		}
+
+		return nextDir;
+	}
+
 	function clear() {
 		gameCtx.save();
 		gameCtx.setTransform(1, 0, 0, 1, 0, 0);
@@ -44,32 +70,88 @@ Game.graphics = (function () {
 
 		that.center = { x: spec.center.x, y: spec.center.y };
 		that.direction = spec.direction; // up dn lt rt
+		that.endpoint = { x: spec.endpoint.x, y: spec.endpoint.y };
 		that.hp = spec.hp;
 		that.moveRate = spec.rate;
 		that.rotation = spec.rotation;
 		that.type = spec.type;
-		that.img = getCreepImage(that.type, 1);		
+		that.image = getCreepImage(that.type, 1);
 		that.lastUpdate = 0;
 		that.finished = false;
+		that.path = spec.path;
 
-		that.draw = function () {			
-				gameCtx.save();
-				gameCtx.translate(that.center.x, that.center.y);
-				gameCtx.rotate(that.rotation);
-				gameCtx.translate(-that.center.x, -that.center.y);
-				gameCtx.drawImage(image, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
-				gameCtx.restore();		
+		that.draw = function () {
+			if ((that.finished || that.hp <= 0) && that.center.x > 0 && that.center.y > 0) { return; }
+			gameCtx.save();
+			gameCtx.translate(that.center.x, that.center.y);
+			gameCtx.rotate(that.rotation);
+			gameCtx.translate(-that.center.x, -that.center.y);
+			gameCtx.drawImage(that.image, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
+			gameCtx.restore();
+		}
+
+		that.update = function (elapsedTime) {
+			if (Math.abs(that.endpoint.x - that.center.x) < 15 && Math.abs(that.endpoint.y - that.center.y) < 15){
+				that.finished = true;
 			}
+			if (that.finished) { return; }
+			that.lastUpdate += elapsedTime;
+			// that.path = newPath;
+			var index = getCreepIndex(that.type, that.lastUpdate)
+			that.image = getCreepImage(that.type, index);
+			if (resetCreepSeq(that.type, index)) { that.lastUpdate = 0; }
 
-		that.update = function (elapsedTime, dir) {
-			that.lastUpdate += elapsedTime; 
-			var index = getCreepIndex(that.type, lastUpdate)
-			that.img = getCreepImage(that.type, index);
-			if(resetCreepSeq(type, index)){lastUpdate = 0;}
-			if(dir == 'up'){that.rotation = -Math.PI/2; that.center.y -= that.moveRate/1000;}
-			if(dir == 'dn'){that.rotation = Math.PI/2; that.center.y += that.moveRate/1000;}
-			if(dir == 'lt'){that.rotation = Math.PI; that.center.x -= that.moveRate/1000;}
-			if(dir == 'rt'){that.rotation = 0; that.center.x += that.moveRate/1000;}
+			let currentDest = that.path[0];
+
+			let Px = Math.round(that.center.x); // xPos rounded to nearest integer 
+			let Py = Math.round(that.center.y); // yPos rounded to nearest integer
+			let Cx = Px - Px % 50; //top left x coord of current cell
+			let Cy = Py - Py % 50; //top left y coord of current cell
+			let row = Cx / 50; //current row
+			let col = Cy / 50; //current col
+			let cellX = Cx + 25; //center.x of current cell
+			let cellY = Cy + 25; //center.y of current cell
+			let Rx = Math.abs(that.path[0].x - Px);
+			let Ry = Math.abs(that.path[0].y - Py)
+
+			if (that.moveRate > 0) {
+				if (that.direction == 'up' && Ry < 3) {
+					that.path.shift();
+					if (path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // keep going up
+					else if (that.path[0].x < currentDest.x) { that.center.x -= that.moveRate / 1000; } // go lt
+					else if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // go rt
+					return;
+				}
+
+				if (that.direction == 'dn' && Ry < 3) {
+					that.path.shift();
+					if (that.path[0].y > currentDest.y) { that.center.y += that.moveRate / 1000; } // keep going down
+					else if (that.path[0].x < currentDest.x) { that.center.x -= that.moveRate / 1000; } // go lt
+					else if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // go rt
+					return;
+				}
+
+				if (that.direction == 'lt' && Rx < 3) {
+					that.path.shift();
+					if (that.path[0].x < currentDest.x) { that.center.x -= that.moveRate / 1000; } // keep going lt
+					else if (that.path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // go up
+					else if (that.path[0].y > currentDest.y) { that.center.y += that.moveRate / 1000; } // go dn
+					return;
+				}
+
+				if (that.direction == 'rt' && Rx < 3) {
+					that.path.shift();
+					if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // keep going rt
+					else if (that.path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // go up
+					else if (that.path[0].y > currentDest.y) { that.center.y += that.moveRate / 1000; } // go dn
+					return;
+				}
+
+				if (that.direction == 'up') { that.center.y -= that.moveRate / 1000; return; }	// keep going up
+				if (that.direction == 'dn') { that.center.y += that.moveRate / 1000; return; } // keep going dn
+				if (that.direction == 'lt') { that.center.x -= that.moveRate / 1000; return; } // keep going lt
+				if (that.direction == 'rt') { that.center.x += that.moveRate / 1000; return; } // keep going rt
+			}
 		}
 
 		return that;
@@ -199,8 +281,8 @@ Game.graphics = (function () {
 	}
 
 	function getCreepIndex(type, timeAccumulator) {
-		if(type == 1 && timeAccumulator <= 200){ return 1; }
-		if(type == 1 && timeAccumulator > 200 && timeAccumulator <= 1200){ return 2; }
+		if (type == 1 && timeAccumulator <= 200) { return 1; }
+		if (type == 1 && timeAccumulator > 200 && timeAccumulator <= 1200) { return 2; }
 		if (type == 1 && timeAccumulator > 1200 && timeAccumulator <= 1400) { return 3; }
 		if (type == 1 && timeAccumulator > 1400) { return 4; }
 
@@ -215,6 +297,8 @@ Game.graphics = (function () {
 		if (type == 3 && timeAccumulator > 1300 && timeAccumulator <= 2300) { return 4; }
 		if (type == 3 && timeAccumulator > 2300 && timeAccumulator <= 2400) { return 5; }
 		if (type == 3 && timeAccumulator > 2300) { return 6; }
+
+		return 1;
 	}
 
 	function getWeapon(type, level) {
@@ -240,9 +324,9 @@ Game.graphics = (function () {
 		}
 	}
 
-	function resetCreepSeq(type, index){
-		if((type == 1 || type == 2) && index == 4) {return true;}
-		if(type == 3 && index == 6) {return true;}
+	function resetCreepSeq(type, index) {
+		if ((type == 1 || type == 2) && index == 4) { return true; }
+		if (type == 3 && index == 6) { return true; }
 		return false;
 	}
 
@@ -291,7 +375,7 @@ Game.graphics = (function () {
 		return that;
 	}
 
-	
+
 
 
 

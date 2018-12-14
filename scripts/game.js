@@ -11,6 +11,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 	let keyboard = input.Keyboard();
 	let mouse = input.Mouse();
 	let lastTimeStamp = performance.now();
+	let timeAccumulator = 0;
 	let cancelNextRequest = false;
 
 	let grid = new Array(15);
@@ -20,6 +21,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 	let drawGameGrid = true;
 	let menuSelectedTower = [0, 0, 0, 0];
 	let lrPath = new Array(15);
+	let lrStack = [];
 	let tbPath = new Array(15);
 	let wave1 = []
 
@@ -36,7 +38,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		}
 	}
 
-	function createPaths(){
+	function createPaths() {
 		lrPath[7][13] = 1;
 		lrPath[7][12] = 2;
 		lrPath[7][11] = 3;
@@ -51,17 +53,35 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		lrPath[7][2] = 12;
 		lrPath[7][1] = 13;
 		lrPath[7][0] = 14;
+
+		lrStack.push({ x: 25, y: 375 });
+		lrStack.push({ x: 75, y: 375 });
+		lrStack.push({ x: 125, y: 375 });
+		lrStack.push({ x: 175, y: 375 });
+		lrStack.push({ x: 225, y: 375 });
+		lrStack.push({ x: 275, y: 375 });
+		lrStack.push({ x: 325, y: 375 });
+		lrStack.push({ x: 375, y: 375 });
+		lrStack.push({ x: 425, y: 375 });
+		lrStack.push({ x: 475, y: 375 });
+		lrStack.push({ x: 525, y: 375 });
+		lrStack.push({ x: 575, y: 375 });
+		lrStack.push({ x: 625, y: 375 });
+		lrStack.push({ x: 675, y: 375 });
+		lrStack.push({ x: 725, y: 375 });
 	}
 
-	function createWaves(){
+	function createWaves() {
 		//Wave 1
 		for (let i = 0; i < 20; i++) {
-				wave.push( graphics.creep({
-					center: {x: -50, y: 375},
+				wave1.push(graphics.creep({
+					center: {x: 0, y: 375},
 					direction: 'rt',
-					hp = 50,
+					endpoint: {x: 725, y: 375},
+					hp: 50,
 					rate: 0,
 					type: i % 2 + 1,
+					path: lrStack,
 				}));
 			}
 	}
@@ -97,12 +117,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		};
 	}
 
-	function getNextDirection(path, pos){
-		if(true){}
-	}
-
 	function gameLoop(currentTime) {
-		let elapsedTime = currentTime - lastTimeStamp;
+		//let elapsedTime = currentTime - lastTimeStamp;
+		let elapsedTime = Math.abs(currentTime - lastTimeStamp);
 		lastTimeStamp = currentTime;
 		update(elapsedTime);
 		render();
@@ -115,12 +132,14 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 
 		menuCanvas.addEventListener('mousedown', function (e) { selectMenuTower(e) });
 		gameCanvas.addEventListener('mousedown', function (e) { placeTower(e) });
-		gameCanvas.addEventListener('click', function (e){ selectGridCell(e); });
+		gameCanvas.addEventListener('click', function (e) { selectGridCell(e); });
 
 		// keyboard.registerCommand(KeyEvent.DOM_VK_U, upgradetower());
 		// keyboard.registerCommand(KeyEvent.DOM_VK_S, sellTower());
-		keyboard.registerCommand(KeyEvent.DOM_VK_G, function(){go = true;});
-		keyboard.registerCommand(KeyEvent.DOM_VK_D, function(){deselectMenu(); deselectGrid();})
+		keyboard.registerCommand(KeyEvent.DOM_VK_G, function () {
+			go = true;
+		});
+		keyboard.registerCommand(KeyEvent.DOM_VK_D, function () { deselectMenu(); deselectGrid(); })
 		keyboard.registerCommand(KeyEvent.DOM_VK_V, function () {
 			if (drawGameGrid) {
 				drawGameGrid = false;
@@ -193,7 +212,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		let rowIndex = mPx / 50;
 		let colIndex = mPy / 50;
 
-		if (grid[rowIndex][colIndex] != 0 && grid[rowIndex][colIndex] != 1 ){return;}
+		if (grid[rowIndex][colIndex] != 0 && grid[rowIndex][colIndex] != 1) { return; }
 
 		if (menuSelectedTower[0] == 1 && score > 50) {
 			grid[rowIndex][colIndex] = graphics.tower({
@@ -268,16 +287,25 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 
 	function render() {
 		graphics.clear();
-		
+
+		//towers
 		for (var i = 0; i < grid.length; i++) {
 			for (var j = 0; j < grid.length; j++) {
-				if (grid[i][j] != 0 && grid[i][j] != 100 && grid[i][j] != 1) {
+				if (grid[i][j] != 0 && grid[i][j] != 225 && grid[i][j] != 1) {
 					grid[i][j].draw();
 				}
 			}
 		}
 		drawGridSelectedBox();
 
+		//creeps
+		if (go) {
+			for (let i = 0; i < wave1.length; i++) {
+				wave1[i].draw();
+			}
+		}
+
+		//menu
 		graphics.clearMenu();
 		graphics.drawScore(score);
 		graphics.drawLives(lives);
@@ -301,14 +329,14 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 		mPy -= mPy % 50;
 		let rowIndex = mPx / 50;
 		let colIndex = mPy / 50;
-		if(typeof(grid[rowIndex][colIndex]) === 'object'){
+		if (typeof (grid[rowIndex][colIndex]) === 'object') {
 			grid[rowIndex][colIndex].selected = true;
 			return;
-		}else
-		if(grid[rowIndex][colIndex] != 100){
-			grid[rowIndex][colIndex] = 1;
-		}
-		
+		} else
+			if (grid[rowIndex][colIndex] != 100) {
+				grid[rowIndex][colIndex] = 1;
+			}
+
 	}
 
 	function selectMenuTower(e) {
@@ -337,10 +365,12 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 					}
 	}
 
-	function setWaveRateInterval(wave, elapsedTime){
+	function setWaveRateInterval(wave, elapsedTime) {
+		timeAccumulator +=elapsedTime;
 		for (let i = 0; i < wave.length; i++) {
-			if(wave[i].moveRate == 0 && elapsedTime > 750){
-				wave[i].moveRate = 150;
+			if (wave[i].moveRate == 0 && timeAccumulator > 5000) {
+				timeAccumulator = 0;
+				wave[i].moveRate = 500;
 				return;
 			}
 		}
@@ -349,7 +379,12 @@ Game.screens['game-play'] = (function (input, graphics, records, menu) {
 	function update(elapsedTime) {
 		mouse.update(elapsedTime);
 		keyboard.update(elapsedTime);
-		setWaveRateInterval(wave1, elapsedTime);
+		if (go) {
+			setWaveRateInterval(wave1, elapsedTime);
+		}
+		for (let i = 0; i < wave1.length; i++) {
+			wave1[i].update(elapsedTime);
+		}
 	}
 
 	return {
