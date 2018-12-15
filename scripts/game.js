@@ -58,47 +58,13 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		lrGndStack = Path.getPath(lrGrid, { x: 0, y: 375 }, { x: 725, y: 375 });
 		tbGndStack = Path.getPath(tbGrid, { x: 375, y: 0 }, { x: 375, y: 725 });
 
-<<<<<<< HEAD
 		for (let i = 25; i < 775; i += 50) {
 			lrAirStack.push({ x: i, y: 375 });
 		}
 
 		for (let i = 25; i < 775; i += 50) {
 			tbAirStack.push({ x: 375, y: i });
-		}
-=======
-		lrAirStack.push({ x: 25, y: 375 });
-		lrAirStack.push({ x: 75, y: 375 });
-		lrAirStack.push({ x: 125, y: 375 });
-		lrAirStack.push({ x: 175, y: 375 });
-		lrAirStack.push({ x: 225, y: 375 });
-		lrAirStack.push({ x: 275, y: 375 });
-		lrAirStack.push({ x: 325, y: 375 });
-		lrAirStack.push({ x: 375, y: 375 });
-		lrAirStack.push({ x: 425, y: 375 });
-		lrAirStack.push({ x: 475, y: 375 });
-		lrAirStack.push({ x: 525, y: 375 });
-		lrAirStack.push({ x: 575, y: 375 });
-		lrAirStack.push({ x: 625, y: 375 });
-		lrAirStack.push({ x: 675, y: 375 });
-		lrAirStack.push({ x: 725, y: 375 });
-
-		tbAirStack.push({ x: 375, y: 25 });
-		tbAirStack.push({ x: 375, y: 75 });
-		tbAirStack.push({ x: 375, y: 125 });
-		tbAirStack.push({ x: 375, y: 175 });
-		tbAirStack.push({ x: 375, y: 225 });
-		tbAirStack.push({ x: 375, y: 275 });
-		tbAirStack.push({ x: 375, y: 325 });
-		tbAirStack.push({ x: 375, y: 375 });
-		tbAirStack.push({ x: 375, y: 425 });
-		tbAirStack.push({ x: 375, y: 475 });
-		tbAirStack.push({ x: 375, y: 525 });
-		tbAirStack.push({ x: 375, y: 575 });
-		tbAirStack.push({ x: 375, y: 625 });
-		tbAirStack.push({ x: 375, y: 675 });
-		tbAirStack.push({ x: 375, y: 725 });
->>>>>>> d64228d38bf7173df74313e3821e62a113e3e6c4
+		}		
 	}
 
 	function createWave1() {
@@ -199,8 +165,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				angle = Math.PI / 2;
 			}
 
-<<<<<<< HEAD
-=======
 		// Wave 2 - All ground, left and top
 		for (let i = 0; i < wave2; i++) {
 			let ctype = Random.nextRange(1, 2);
@@ -278,7 +242,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				angle = Math.PI / 2;
 			}
 
->>>>>>> d64228d38bf7173df74313e3821e62a113e3e6c4
 			creeps.push(graphics.creep({
 				center: startP,
 				direction: dir,
