@@ -64,7 +64,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 
 		for (let i = 25; i < 775; i += 50) {
 			tbAirStack.push({ x: 375, y: i });
-		}		
+		}
 	}
 
 	function createWave1() {
@@ -165,83 +165,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				angle = Math.PI / 2;
 			}
 
-		// Wave 2 - All ground, left and top
-		for (let i = 0; i < wave2; i++) {
-			let ctype = Random.nextRange(1, 2);
-			let rstack = Random.nextRange(1, 2);
-			let stack = null;
-			let pathGrid = null;
-			let endP = null;
-			let startP = null;
-			let dir = null;
-			let angle = null;
-
-			if (rstack === 1) {
-				startP = { x: 0, y: 375 };
-				endP = { x: 725, y: 375 };
-				stack = testStack
-				pathGrid = lrGrid;
-				dir = 'rt';
-				angle = 0;
-			}
-			else {
-				startP = { x: 375, y: 0 };
-				endP = { x: 375, y: 725 };
-				stack = testStack2;
-				dir = 'dn';
-				angle = Math.PI / 2;
-			}
-			creeps.push(graphics.creep({
-				center: startP,
-				direction: dir,
-				endpoint: endP,
-				hp: 50,
-				rate: 0,
-				rotation: angle,
-				type: 2,
-				path: stack,
-				wave: 2
-			}));
-		}
-
-		// Wave 3 - ground and air left and top
-		for (let i = 0; i < wave3; i++) {
-			let cType = Random.nextRange(1, 3);
-			let rstack = Random.nextRange(1, 2);
-			let stack = null;
-			let endP = null;
-			let startP = null;
-			let dir = null;
-			let angle = null;
-
-			if (rstack === 1 && cType < 3) {
-				startP = { x: 0, y: 375 };
-				endP = { x: 725, y: 375 };
-				stack = testStack;
-				dir = 'rt';
-				angle = 0;
-			}
-			else if (rstack === 2 && cType < 3) {
-				startP = { x: 375, y: 0 };
-				endP = { x: 375, y: 725 };
-				stack = testStack2;
-				dir = 'dn';
-				angle = Math.PI / 2;
-			}
-			else if (rstack === 1 && cType === 3) {
-				startP = { x: 0, y: 375 };
-				endP = { x: 725, y: 375 };
-				stack = lrAirStack;
-				dir = 'rt';
-				angle = 0;
-			} else {
-				startP = { x: 375, y: 0 };
-				endP = { x: 375, y: 725 };
-				stack = tbAirStack
-				dir = 'dn';
-				angle = Math.PI / 2;
-			}
-
 			creeps.push(graphics.creep({
 				center: startP,
 				direction: dir,
@@ -269,14 +192,11 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		if (menuSelectedTower[3] === 1) { graphics.drawSelectedBox({ x: 150, y: 150, canvas: 'menu' }); return; }
 	}
 
-	function selectGridCell(e) {
+	function drawGridSelectedBox() {
 		for (let i = 0; i < grid.length; i++) {
 			for (let j = 0; j < grid.length; j++) {
-				if (grid[i][j] == 0) {
+				if (grid[i][j] == 1) {
 					graphics.drawSelectedBox({ x: i * 50, y: j * 50, canvas: 'game' });
-				}
-				if (typeof grid[i][j] === 'object') {
-					grid[i][j].selected = true;
 				}
 			}
 		}
@@ -312,7 +232,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	}
 
 	function initialize() {
-
+		mouse.registerCommand('mousedown', function (e) { mouseCapture = true; });
+		mouse.registerCommand('mouseup', function () { mouseCapture = false; });
+		mouse.registerCommand('mousemove', function (e) { if (mouseCapture) { } });
 		menuCanvas.addEventListener('mousedown', function (e) { selectMenuTower(e) });
 		gameCanvas.addEventListener('mousedown', function (e) { placeTower(e) });
 		gameCanvas.addEventListener('click', function (e) { selectGridCell(e); });
@@ -321,9 +243,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		keyboard.registerCommand(KeyEvent.DOM_VK_S, sellTower());
 		keyboard.registerCommand(KeyEvent.DOM_VK_R, function () { drawArcs = true; });
 		keyboard.registerCommand(KeyEvent.DOM_VK_T, function () { drawArcs = false; });
-		keyboard.registerCommand(KeyEvent.DOM_VK_G, function () {
-			go = true;
-		});
+		keyboard.registerCommand(KeyEvent.DOM_VK_G, function () { go = true; });
 		keyboard.registerCommand(KeyEvent.DOM_VK_D, function () { deselectMenu(); deselectGrid(); })
 		keyboard.registerCommand(KeyEvent.DOM_VK_V, function () {
 			if (drawGameGrid) {
@@ -344,18 +264,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		keyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function () {
 			cancelNextRequest = true;
 			menu.showScreen('main-menu');
-		});
-
-		mouse.registerCommand('mousedown', function (e) {
-			mouseCapture = true;
-		});
-		mouse.registerCommand('mouseup', function () {
-			mouseCapture = false;
-		});
-		mouse.registerCommand('mousemove', function (e) {
-			if (mouseCapture) {
-
-			}
 		});
 
 		initializeGrids();
@@ -474,18 +382,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		return;
 	}
 
-	// Used for debugging in the browser :(
-	function printGrid() {
-		let line = "";
-		for (let i = 0; i < grid.length; i++) {
-			for (let j = 0; j < grid.length; j++) {
-				line += grid[i][j] + " ";
-			}
-			console.log(line);
-			line = "";
-		}
-	}
-
 	function render() {
 		graphics.clear();
 
@@ -497,7 +393,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				}
 			}
 		}
-		selectGridCell();
+		drawGridSelectedBox();
 
 		//creeps
 		if (go) {
@@ -535,9 +431,10 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		if (typeof (grid[rowIndex][colIndex]) === 'object') {
 			grid[rowIndex][colIndex].selected = true;
 			return;
-		} else if (grid[rowIndex][colIndex] != 100) {
-			grid[rowIndex][colIndex] = 1;
-		}
+		} else
+			if (grid[rowIndex][colIndex] != 100) {
+				grid[rowIndex][colIndex] = 1;
+			}
 
 	}
 
@@ -575,7 +472,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	function setWaveRateInterval(wave, elapsedTime) {
 		timeAccumulator += elapsedTime;
 		for (let i = 0; i < wave.length; i++) {
-			if (wave[i].moveRate == 0 && timeAccumulator > 1000) {
+			if (wave[i].moveRate == 0 && timeAccumulator > 2000) {
 				timeAccumulator = 0;
 				wave[i].moveRate = 1000;
 				return;
@@ -586,8 +483,12 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	function update(elapsedTime) {
 		mouse.update(elapsedTime);
 		keyboard.update(elapsedTime);
+
+		//update paths
 		lrGrid = Path.updateGrid(lrGrid, { x: 725, y: 375 });
 		tbGrid = Path.updateGrid(tbGrid, { x: 375, y: 725 });
+
+		//make the creeps move in each wave (eventually)
 		if (go) {
 			setWaveRateInterval(creeps, elapsedTime);
 		}
@@ -602,7 +503,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		}
 
 		// creeps
-
 		for (let i = 0; i < wave1; i++) {
 			if (creeps[i].finished && creeps[i].hp > 0) {
 				lives--;
