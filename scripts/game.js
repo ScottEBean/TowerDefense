@@ -77,8 +77,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				hp: 50,
 				rate: 0,
 				rotation: 0,
-				type: Random.nextRange(1,2),
-				path: testStack,
+				type: Random.nextRange(1, 2),
+				path: lrGndStack,
+				pathNum: 1,
 				grid: lrGrid,
 				wave: 1
 			}));
@@ -88,8 +89,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	function createWave2() {
 		// Wave 2 - All ground, left and top
 		for (let i = 0; i < wave2; i++) {
-			let ctype = Random.nextRange(1, 2);
-			let rstack = Random.nextRange(1, 2);
+			let cType = Random.nextRange(1, 2);
+			let randStack = Random.nextRange(1, 2);
 			let stack = null;
 			let pathGrid = null;
 			let endP = null;
@@ -97,18 +98,18 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 			let dir = null;
 			let angle = null;
 
-			if (rstack === 1) {
+			if (randStack === 1) {
 				startP = { x: 0, y: 375 };
 				endP = { x: 725, y: 375 };
-				stack = testStack
-				pathGrid = lrGrid;
+				stack = lrGndStack,
+					pathGrid = lrGrid;
 				dir = 'rt';
 				angle = 0;
 			}
 			else {
 				startP = { x: 375, y: 0 };
 				endP = { x: 375, y: 725 };
-				stack = testStack2;
+				stack = tbGrid
 				dir = 'dn';
 				angle = Math.PI / 2;
 			}
@@ -119,8 +120,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				hp: 50,
 				rate: 0,
 				rotation: angle,
-				type: 2,
+				type: cType,
 				path: stack,
+				pathNum: randStack,
 				wave: 2
 			}));
 		}
@@ -130,28 +132,28 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		// Wave 3 - ground and air left and top
 		for (let i = 0; i < wave3; i++) {
 			let cType = Random.nextRange(1, 3);
-			let rstack = Random.nextRange(1, 2);
+			let randStack = Random.nextRange(1, 2);
 			let stack = null;
-			let endP = null;
 			let startP = null;
+			let endP = null;
 			let dir = null;
 			let angle = null;
 
-			if (rstack === 1 && cType < 3) {
+			if (randStack === 1 && cType < 3) {
 				startP = { x: 0, y: 375 };
 				endP = { x: 725, y: 375 };
-				stack = testStack;
+				stack = lrGndStack;
 				dir = 'rt';
 				angle = 0;
 			}
-			else if (rstack === 2 && cType < 3) {
+			else if (randStack === 2 && cType < 3) {
 				startP = { x: 375, y: 0 };
 				endP = { x: 375, y: 725 };
-				stack = testStack2;
+				stack = tbGndStack;
 				dir = 'dn';
 				angle = Math.PI / 2;
 			}
-			else if (rstack === 1 && cType === 3) {
+			else if (randStack === 1 && cType === 3) {
 				startP = { x: 0, y: 375 };
 				endP = { x: 725, y: 375 };
 				stack = lrAirStack;
@@ -172,8 +174,9 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				hp: 50,
 				rate: 0,
 				rotation: angle,
-				type: 3,
+				type: cType,
 				path: stack,
+				pathNum: randStack,
 				wave: 3
 			}));
 		}
@@ -214,7 +217,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		for (let i = 0; i < grid.length; i++) {
 			for (let j = 0; i < grid.length; j++) {
 				if (typeof grid[i][j] === 'object' && grid[i][j].selected) {
-					return {twr: grid[i][j], row: i, col: j};
+					return { twr: grid[i][j], row: i, col: j };
 				}
 			}
 		}
@@ -516,15 +519,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 					creeps[i].update(elapsedTime, tbGrid);
 				}
 			}
-		}
-	}
-
-	function updateUnitPaths(){
-		for (let i = 0; i < creeps.length; i++) {
-			var cp = creeps[i];
-			cp.path = 0;
-			//cp.path = Path.getPath()
-			
 		}
 	}
 

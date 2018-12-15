@@ -55,6 +55,7 @@ Game.graphics = (function () {
 		that.lastUpdate = 0;
 		that.finished = false;
 		that.path = spec.path;
+		that.pathNum = spec.pathNum;
 
 		that.draw = function () {
 			if ((that.finished || that.hp <= 0) && that.center.x > 0 && that.center.y > 0) { return; }
