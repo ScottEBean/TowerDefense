@@ -80,6 +80,7 @@ Game.graphics = (function () {
 			}
 
 			that.lastUpdate += elapsedTime;
+			that.path = 0;
 			that.path = Path.getPath(grid, {x: that.center.x, y:that.center.y}, that.endpoint)
 			let index = getCreepIndex(that.type, that.lastUpdate)
 			that.image = getCreepImage(that.type, index);
@@ -251,13 +252,13 @@ Game.graphics = (function () {
 		if (spec.canvas === 'menu') {
 			menuCtx.beginPath();
 			menuCtx.lineWidth = 1;
-			menuCtx.strokeStyle = 'rgba(255, 0, 0, 0.75)';
+			menuCtx.strokeStyle = 'rgba(0, 255, 0, 0.75)';
 			menuCtx.rect(spec.x, spec.y, gridSize + 2, gridSize + 2);
 			menuCtx.stroke();
 		} else {
 			gameCtx.beginPath();
 			gameCtx.lineWidth = 1;
-			gameCtx.strokeStyle = 'rgba(255, 0, 0, 0.75)';
+			gameCtx.strokeStyle = 'rgba(0, 255, 0, 0.75)';
 			gameCtx.rect(spec.x, spec.y, gridSize + 2, gridSize + 2);
 			gameCtx.stroke();
 		}

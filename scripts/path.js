@@ -7,7 +7,8 @@ let Path = (function () {
     for (let i = 0; i < grid.length; i++) { pathGrid[i] = new Array(15); }
     for (let i = 0; i < grid.length; i++) {
       for (let j = 0; j < grid.length; j++) {
-        pathGrid[i][j] = grid[i][j];
+        if(grid[i][j] == 1500){ pathGrid[i][j] = grid[i][j];}
+        else{pathGrid[i][j] = 225;}
       }
     }
 
@@ -20,6 +21,7 @@ let Path = (function () {
     //this is what happens when you pull all nighters
     while (frontier.length != 0) {
       first = frontier.shift();
+
       //up
       if (first.x != 0) {
         if (pathGrid[first.y][first.x - 1] != 1500 && pathGrid[first.y][first.x - 1] > pathGrid[first.y][first.x] + 1) {
@@ -27,6 +29,7 @@ let Path = (function () {
           frontier.push({ y: first.y, x: first.x - 1 });
         }
       }
+
       //down
       if (first.x != pathGrid.length - 1) {
         if (pathGrid[first.y][first.x + 1] != 1500 && pathGrid[first.y][first.x + 1] > pathGrid[first.y][first.x] + 1) {
@@ -34,6 +37,7 @@ let Path = (function () {
           frontier.push({ y: first.y, x: first.x + 1 });
         }
       }
+
       //left
       if (first.y != 0) {
         if (pathGrid[first.y - 1][first.x] != 1500 && pathGrid[first.y - 1][first.x] > pathGrid[first.y][first.x] + 1) {
@@ -41,6 +45,7 @@ let Path = (function () {
           frontier.push({ y: first.y - 1, x: first.x });
         }
       }
+
       //right
       if (first.y != pathGrid.length - 1) {
         if (pathGrid[first.y + 1][first.x] != 1500 && pathGrid[first.y + 1][first.x] > pathGrid[first.y][first.x] + 1) {

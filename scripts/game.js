@@ -27,7 +27,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	let lrGndStack = [];
 	let tbAirStack = [];
 	let tbGndStack = [];
-	let wave1 = 1;
+	let wave1 = 20;
 	let wave2 = 35;
 	let wave3 = 50;
 	let creeps = [];
@@ -77,7 +77,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				hp: 50,
 				rate: 0,
 				rotation: 0,
-				type: 1,
+				type: Random.nextRange(1,2),
 				path: testStack,
 				grid: lrGrid,
 				wave: 1
@@ -212,10 +212,10 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 
 	function getSelectedTower() {
 		for (let i = 0; i < grid.length; i++) {
-			for (let j = 0; j < grid.length; j++) {
-				// if (typeof grid[i][j] === 'object' && grid[i][j].selected) {
-				// 	return { tower: grid[i][j], row: i, col: j };
-				// }
+			for (let j = 0; i < grid.length; j++) {
+				if (typeof grid[i][j] === 'object' && grid[i][j].selected) {
+					return {twr: grid[i][j], row: i, col: j};
+				}
 			}
 		}
 	}
@@ -239,8 +239,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		gameCanvas.addEventListener('mousedown', function (e) { placeTower(e) });
 		gameCanvas.addEventListener('click', function (e) { selectGridCell(e); });
 
-		keyboard.registerCommand(KeyEvent.DOM_VK_U, upgradeTower());
-		keyboard.registerCommand(KeyEvent.DOM_VK_S, sellTower());
+		keyboard.registerCommand(KeyEvent.DOM_VK_U, function () { upgradeTower(); });
+		keyboard.registerCommand(KeyEvent.DOM_VK_S, function () { sellTower(); });
 		keyboard.registerCommand(KeyEvent.DOM_VK_R, function () { drawArcs = true; });
 		keyboard.registerCommand(KeyEvent.DOM_VK_T, function () { drawArcs = false; });
 		keyboard.registerCommand(KeyEvent.DOM_VK_G, function () { go = true; });
@@ -305,8 +305,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		let mPy = Math.floor(mPos.y);
 		mPx -= mPx % 50;
 		mPy -= mPy % 50;
-		let rowIndex = mPx / 50;
-		let colIndex = mPy / 50;
+		let rowIndex = mPy / 50;
+		let colIndex = mPx / 50;
 
 		if (grid[rowIndex][colIndex] != 0 && grid[rowIndex][colIndex] != 1) { return; }
 
@@ -462,11 +462,11 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	}
 
 	function sellTower() {
-		// var sold = getSelectedTower();
+		var sold = getSelectedTower();
 
-		// grid[sold.row][sold.col] = 1;
+		grid[sold.row][sold.col] = 0;
 
-		// score += 50;
+		score += 50;
 	}
 
 	function setWaveRateInterval(wave, elapsedTime) {
@@ -483,10 +483,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	function update(elapsedTime) {
 		mouse.update(elapsedTime);
 		keyboard.update(elapsedTime);
-
-		//update paths
-		lrGrid = Path.updateGrid(lrGrid, { x: 725, y: 375 });
-		tbGrid = Path.updateGrid(tbGrid, { x: 375, y: 725 });
 
 		//make the creeps move in each wave (eventually)
 		if (go) {
@@ -523,9 +519,18 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		}
 	}
 
+	function updateUnitPaths(){
+		for (let i = 0; i < creeps.length; i++) {
+			var cp = creeps[i];
+			cp.path = 0;
+			//cp.path = Path.getPath()
+			
+		}
+	}
+
 	function upgradeTower() {
-		// getSelectedTower().tower.upgrade();
-		// score -= 50;
+		getSelectedTower().twr.upgrade();
+		score -= 50;
 	}
 
 	return {
