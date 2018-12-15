@@ -64,3 +64,49 @@ lrPath[7][3] = 11;
 lrPath[7][2] = 12;
 lrPath[7][1] = 13;
 lrPath[7][0] = 14;
+
+testStack.push({ x: 25, y: 375 });
+testStack.push({ x: 75, y: 375 });
+testStack.push({ x: 125, y: 375 });
+testStack.push({ x: 175, y: 375 });
+testStack.push({ x: 225, y: 375 });
+testStack.push({ x: 275, y: 375 });
+testStack.push({ x: 325, y: 375 });
+//go dn 2 cells
+testStack.push({ x: 325, y: 425 });
+testStack.push({ x: 325, y: 475 });
+//go right 2 cells
+testStack.push({ x: 375, y: 475 });
+testStack.push({ x: 425, y: 475 });
+//go up 2 cells
+testStack.push({ x: 225, y: 225 });
+testStack.push({ x: 225, y: 175 });
+//go down 2 cells
+testStack.push({ x: 25, y: 325 });
+testStack.push({ x: 25, y: 375 });
+
+//go right
+testStack.push({ x: 375, y: 375 });
+testStack.push({ x: 425, y: 375 });
+testStack.push({ x: 475, y: 375 });
+testStack.push({ x: 525, y: 375 });
+testStack.push({ x: 575, y: 375 });
+testStack.push({ x: 625, y: 375 });
+testStack.push({ x: 675, y: 375 });
+testStack.push({ x: 725, y: 375 });
+
+testStack2.push({ x: 375, y: 25 });
+testStack2.push({ x: 375, y: 75 });
+testStack2.push({ x: 375, y: 125 });
+testStack2.push({ x: 375, y: 175 });
+testStack2.push({ x: 375, y: 225 });
+testStack2.push({ x: 375, y: 275 });
+testStack2.push({ x: 375, y: 325 });
+testStack2.push({ x: 375, y: 375 });
+testStack2.push({ x: 375, y: 425 });
+testStack2.push({ x: 375, y: 475 });
+testStack2.push({ x: 375, y: 525 });
+testStack2.push({ x: 375, y: 575 });
+testStack2.push({ x: 375, y: 625 });
+testStack2.push({ x: 375, y: 675 });
+testStack2.push({ x: 375, y: 725 });

@@ -1,8 +1,8 @@
 // ------------------------------------------------------------------
-// This is the graphics object.  The various rendering components
+// This is the graphics object.  The letious rendering components
 // are located here.
 // ------------------------------------------------------------------
-Game.graphics = (function (helper) {
+Game.graphics = (function () {
 	'use strict';
 
 	let backCanvas = document.getElementById('backgroundCanvas');
@@ -18,7 +18,7 @@ Game.graphics = (function (helper) {
 	//------------------------------------------------------------------
 	// Public function that allows the client code to clear the canvas.
 	//------------------------------------------------------------------
-	
+
 
 	function clear() {
 		gameCtx.save();
@@ -66,15 +66,22 @@ Game.graphics = (function (helper) {
 			gameCtx.restore();
 		}
 
-		that.update = function (elapsedTime) {
-			if (Math.abs(that.endpoint.x - that.center.x) < 10 && Math.abs(that.endpoint.y - that.center.y) < 15){
+		that.update = function (elapsedTime, grid) {
+			
+			if (Math.abs(that.endpoint.x - that.center.x) < 10 && Math.abs(that.endpoint.y - that.center.y) < 15) {
 				that.finished = true;
 				console.log("finished")
 			}
 			if (that.finished) { return; }
+
+			if (that.type == 3) {
+				if (that.direction == 'dn') { that.center.y += that.moveRate / 1000; return; } // keep going dn
+				if (that.direction == 'rt') { that.center.x += that.moveRate / 1000; return; } // keep going rt
+			}
+
 			that.lastUpdate += elapsedTime;
-			// that.path = newPath;
-			var index = getCreepIndex(that.type, that.lastUpdate)
+			that.path = Path.getPath(grid, {x: that.center.x, y:that.center.y}, that.endpoint)
+			let index = getCreepIndex(that.type, that.lastUpdate)
 			that.image = getCreepImage(that.type, index);
 			if (resetCreepSeq(that.type, index)) { that.lastUpdate = 0; }
 
@@ -91,14 +98,22 @@ Game.graphics = (function (helper) {
 			let Rx = Math.abs(currentDest.x - Px);
 			let Ry = Math.abs(currentDest.y - Py)
 
-			
+
 			if (that.moveRate > 0) {
 				if (that.direction == 'up' && Ry < 3) {
 					that.path.shift();
-					if (that.path.length == 0) { that.center.y -= that.moveRate / 1000; that.finished = true; return;}
-					if (path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // keep going up
-					else if (that.path[0].x < currentDest.x) { that.center.x -= that.moveRate / 1000; } // go lt
-					else if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // go rt
+					if (that.path.length == 0) { that.center.y -= that.moveRate / 1000; that.finished = true; return; }
+					if (that.path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // keep going up
+					else if (that.path[0].x < currentDest.x) { // go lt
+						that.rotation = Math.PI; 
+						that.direction = 'lt'
+						that.center.x -= that.moveRate / 1000;
+					 } 
+					else if (that.path[0].x > currentDest.x) { // go rt
+						that.rotation = 0; 
+						that.direction = 'rt'
+						that.center.x += that.moveRate / 1000;
+					 } 
 					return;
 				}
 
@@ -106,26 +121,50 @@ Game.graphics = (function (helper) {
 					that.path.shift();
 					if (that.path.length == 0) { that.center.y += that.moveRate / 1000; that.finished = true; return; }
 					if (that.path[0].y > currentDest.y) { that.center.y += that.moveRate / 1000; } // keep going down
-					else if (that.path[0].x < currentDest.x) { that.center.x -= that.moveRate / 1000; } // go lt
-					else if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // go rt
+					else if (that.path[0].x < currentDest.x) { // go lt
+						that.rotation = Math.PI;
+						that.direction = 'lt'
+						that.center.x -= that.moveRate / 1000;
+					 } 
+					else if (that.path[0].x > currentDest.x) { // go rt
+						that.rotation = 0;
+						that.direction = 'rt'
+						that.center.x += that.moveRate / 1000;
+					 } 
 					return;
 				}
 
 				if (that.direction == 'lt' && Rx < 3) {
 					that.path.shift();
-					if (that.path.length == 0) { that.center.x -= that.moveRate / 1000; that.finished = true; return;  }
+					if (that.path.length == 0) { that.center.x -= that.moveRate / 1000; that.finished = true; return; }
 					if (that.path[0].x < currentDest.x) { that.center.x -= that.moveRate / 1000; } // keep going lt
-					else if (that.path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // go up
-					else if (that.path[0].y > currentDest.y) { that.center.y += that.moveRate / 1000; } // go dn
+					else if (that.path[0].y < currentDest.y) { // go up
+						that.rotation = -Math.PI / 2;
+						that.direction = 'up'
+						that.center.y -= that.moveRate / 1000;
+					 } 
+					else if (that.path[0].y > currentDest.y) { // go dn
+						that.rotation = Math.PI / 2;
+						that.direction = 'dn'
+						that.center.y += that.moveRate / 1000;
+					 } 
 					return;
 				}
 
-				if (that.direction == 'rt' && Rx < 3) {						
+				if (that.direction == 'rt' && Rx < 3) {
 					that.path.shift();
 					if (that.path.length == 0) { that.center.x += that.moveRate / 1000; that.finished = true; return; }
 					if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // keep going rt
-					else if (that.path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // go up
-					else if (that.path[0].y > currentDest.y) { that.center.y += that.moveRate / 1000; } // go dn
+					else if (that.path[0].y < currentDest.y) { // go up
+						that.rotation = -Math.PI / 2; 
+						that.direction = 'up'; 
+						that.center.y -= that.moveRate / 1000;
+					 } 
+					else if (that.path[0].y > currentDest.y) { // go dn
+						that.rotation = Math.PI / 2; 
+						that.direction = 'dn'; 
+						that.center.y += that.moveRate / 1000;
+					 } 
 					return;
 				}
 
@@ -144,10 +183,10 @@ Game.graphics = (function (helper) {
 	}
 
 	function drawBackgroundBorder() {
-		var xm = gameCanvas.width / 2 + 250;
-		var xw = backCanvas.width;
-		var ym = backCanvas.height / 2;
-		var yh = backCanvas.height;
+		let xm = gameCanvas.width / 2 + 250;
+		let xw = backCanvas.width;
+		let ym = backCanvas.height / 2;
+		let yh = backCanvas.height;
 		backCtx.save();
 		backCtx.beginPath();
 		backCtx.moveTo(250, ym - gridSize / 2);
@@ -175,13 +214,13 @@ Game.graphics = (function (helper) {
 		backCtx.setLineDash([1, 10]);
 
 		//draw Vertical grid lines
-		for (var i = 250; i <= backCanvas.width; i += gridSize) {
+		for (let i = 250; i <= backCanvas.width; i += gridSize) {
 			backCtx.moveTo(i, 0);
 			backCtx.lineTo(i, 750);
 		}
 
 		//draw horizontal grid lines
-		for (var i = 0; i <= backCanvas.height; i += gridSize) {
+		for (let i = 0; i <= backCanvas.height; i += gridSize) {
 			backCtx.moveTo(250, i);
 			backCtx.lineTo(1000, i);
 		}
@@ -196,15 +235,15 @@ Game.graphics = (function (helper) {
 	function drawLives(lives) {
 		menuCtx.font = '15px Roboto';
 		menuCtx.fillStyle = cyanStrokeFill;
-		var livesText = 'Lives: ' + lives;
-		var textWidth = menuCtx.measureText(livesText).width + 10;
+		let livesText = 'Lives: ' + lives;
+		let textWidth = menuCtx.measureText(livesText).width + 10;
 		menuCtx.fillText(livesText, 250 - textWidth, menuCanvas.height - 10);
 	}
 
 	function drawScore(score) {
 		menuCtx.font = '15px Roboto';
 		menuCtx.fillStyle = cyanStrokeFill;
-		var scoreText = '$ ' + score;
+		let scoreText = '$ ' + score;
 		menuCtx.fillText(scoreText, 10, gameCanvas.height - 10);
 	}
 
@@ -317,32 +356,56 @@ Game.graphics = (function (helper) {
 
 		that.center = { x: spec.center.x, y: spec.center.y };
 		that.cost = 50;
+		that.level = 1;
 		that.damage = that.level * 10;
 		that.fireRate = spec.fireRate;
-		that.level = 1;
 		that.range = 100;
-		that.rotationRate = spec.rotation;
+		that.rotationRate = 30 * Math.PI / 1000
+		that.angle = 0;
 		that.selected = false;
 		that.type = spec.type
 		that.weapon = getWeapon(spec.type, that.level);
 		let arcDraw = false;
+		that.target = 0;
+		that.targetDist = 1500;
+
+		that.setTarget = function (creeps) {	
+			that.targetDist = 1500;
+			that.target = undefined;
+			if(creeps.length < 1){ target = undefined; return;}		
+			for (let i = 0; i < creeps.length; i++) {
+				if (typeof creeps[i] !== 'object') {
+					continue;
+				}
+				let creep = creeps[i];
+				let xCalc = that.center.x - creep.center.x;
+				let yCalc = that.center.y - creep.center.y;
+				let distance = Math.sqrt(Math.pow(xCalc, 2) + Math.pow(yCalc, 2));
+				if (distance < that.targetDist) { 
+					that.targetDist = distance;
+					that.target = creeps[i];
+				}
+			}			
+		}
 
 		that.draw = function () {
 			gameCtx.save();
 			gameCtx.translate(that.center.x, that.center.y);
-			gameCtx.rotate(that.rotationRate);
 			gameCtx.translate(-that.center.x, -that.center.y);
 			gameCtx.drawImage(base, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
+			gameCtx.restore();
+			gameCtx.save();
+			gameCtx.translate(that.center.x, that.center.y);
+			gameCtx.rotate(that.angle);
+			gameCtx.translate(-that.center.x, -that.center.y);
 			gameCtx.drawImage(that.weapon, that.center.x - gridSize / 2, that.center.y - gridSize / 2, gridSize, gridSize);
+			gameCtx.restore();
 			if (that.selected) {
 				drawSelectedBox({ x: that.center.x - gridSize / 2, y: that.center.y - gridSize / 2, canvas: 'game' });
 			}
-			if(arcDraw){
+			if (arcDraw) {
 				that.drawArc();
 			}
-
-			gameCtx.restore();
-
 		}
 
 		that.drawArc = function () {
@@ -352,6 +415,14 @@ Game.graphics = (function (helper) {
 			gameCtx.arc(that.center.x, that.center.y, that.range, 0, 2 * Math.PI, true);
 			gameCtx.lineTo(spec.center.x, spec.center.y);
 			gameCtx.fill();
+		}
+
+		that.rotateRight = function () {
+
+		};
+
+		that.rotateLeft = function () {
+			that.angle += that.rotationRate;
 		}
 
 		that.upgrade = function () {
@@ -364,17 +435,16 @@ Game.graphics = (function (helper) {
 			}
 		}
 
-		that.update = function (elapsedTime, drawArcs) {
+		that.update = function (elapsedTime, drawArcs, creeps) {
 			arcDraw = drawArcs;
-
-			var result = computeAngle(spec.rotation, spec.center, spec.target);
-			if (testTolerance(result.angle, 0, .01) === false) {
+			that.setTarget(creeps);
+			if(typeof that.target === 'undefined'){return;}
+			let result = Helper.computeAngle(that.angle, that.center, that.target.center);
+			if (Helper.testTolerance(result.angle, 0, .03) === false) {
 				if (result.crossProduct > 0) {
-					weaponSprite.rotateRight(spec.rotateRate);
-					spec.rotation += spec.rotateRate;
+					that.angle += that.rotationRate;
 				} else {
-					weaponSprite.rotateLeft(spec.rotateRate);
-					spec.rotation -= spec.rotateRate;
+					that.angle -= that.rotationRate;
 				}
 			}
 		}
