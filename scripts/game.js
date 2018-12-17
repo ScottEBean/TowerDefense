@@ -27,6 +27,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	let lrGndStack = [];
 	let tbAirStack = [];
 	let tbGndStack = [];
+	let projectiles = [];
 	let wave1 = 20;
 	let wave2 = 35;
 	let wave3 = 50;
@@ -398,6 +399,14 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		}
 		drawGridSelectedBox();
 
+
+		//projectiles
+		for (let i = 0; i < projectiles.length; i++) {
+			if (typeof projectiles[i] === 'object' && projectiles[i].alive) {
+				projectiles[i].draw();
+			}
+		}
+
 		//creeps
 		if (go) {
 			for (let i = 0; i < creeps.length; i++) {
@@ -496,9 +505,17 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		for (let i = 0; i < grid.length; i++) {
 			for (let j = 0; j < grid.length; j++) {
 				if (typeof (grid[i][j]) === 'object') {
-					grid[i][j].update(elapsedTime, drawArcs, creeps);
+					grid[i][j].update(elapsedTime, drawArcs, creeps, projectiles);
 				}
 			}
+		}
+
+		//projectiles
+		for (let i = 0; i < projectiles.length; i++) {
+			if (typeof projectiles[i] === 'object' && projectiles[i].alive) {				
+				projectiles[i].update(elapsedTime);
+			}
+			
 		}
 
 		// creeps

@@ -68,7 +68,7 @@ Game.graphics = (function () {
 		}
 
 		that.update = function (elapsedTime, grid) {
-			
+
 			if (Math.abs(that.endpoint.x - that.center.x) < 10 && Math.abs(that.endpoint.y - that.center.y) < 15) {
 				that.finished = true;
 				console.log("finished")
@@ -82,7 +82,7 @@ Game.graphics = (function () {
 
 			that.lastUpdate += elapsedTime;
 			that.path = 0;
-			that.path = Path.getPath(grid, {x: that.center.x, y:that.center.y}, that.endpoint)
+			that.path = Path.getPath(grid, { x: that.center.x, y: that.center.y }, that.endpoint)
 			let index = getCreepIndex(that.type, that.lastUpdate)
 			that.image = getCreepImage(that.type, index);
 			if (resetCreepSeq(that.type, index)) { that.lastUpdate = 0; }
@@ -107,15 +107,15 @@ Game.graphics = (function () {
 					if (that.path.length == 0) { that.center.y -= that.moveRate / 1000; that.finished = true; return; }
 					if (that.path[0].y < currentDest.y) { that.center.y -= that.moveRate / 1000; } // keep going up
 					else if (that.path[0].x < currentDest.x) { // go lt
-						that.rotation = Math.PI; 
+						that.rotation = Math.PI;
 						that.direction = 'lt'
 						that.center.x -= that.moveRate / 1000;
-					 } 
+					}
 					else if (that.path[0].x > currentDest.x) { // go rt
-						that.rotation = 0; 
+						that.rotation = 0;
 						that.direction = 'rt'
 						that.center.x += that.moveRate / 1000;
-					 } 
+					}
 					return;
 				}
 
@@ -127,12 +127,12 @@ Game.graphics = (function () {
 						that.rotation = Math.PI;
 						that.direction = 'lt'
 						that.center.x -= that.moveRate / 1000;
-					 } 
+					}
 					else if (that.path[0].x > currentDest.x) { // go rt
 						that.rotation = 0;
 						that.direction = 'rt'
 						that.center.x += that.moveRate / 1000;
-					 } 
+					}
 					return;
 				}
 
@@ -144,12 +144,12 @@ Game.graphics = (function () {
 						that.rotation = -Math.PI / 2;
 						that.direction = 'up'
 						that.center.y -= that.moveRate / 1000;
-					 } 
+					}
 					else if (that.path[0].y > currentDest.y) { // go dn
 						that.rotation = Math.PI / 2;
 						that.direction = 'dn'
 						that.center.y += that.moveRate / 1000;
-					 } 
+					}
 					return;
 				}
 
@@ -158,15 +158,15 @@ Game.graphics = (function () {
 					if (that.path.length == 0) { that.center.x += that.moveRate / 1000; that.finished = true; return; }
 					if (that.path[0].x > currentDest.x) { that.center.x += that.moveRate / 1000; } // keep going rt
 					else if (that.path[0].y < currentDest.y) { // go up
-						that.rotation = -Math.PI / 2; 
-						that.direction = 'up'; 
+						that.rotation = -Math.PI / 2;
+						that.direction = 'up';
 						that.center.y -= that.moveRate / 1000;
-					 } 
+					}
 					else if (that.path[0].y > currentDest.y) { // go dn
-						that.rotation = Math.PI / 2; 
-						that.direction = 'dn'; 
+						that.rotation = Math.PI / 2;
+						that.direction = 'dn';
 						that.center.y += that.moveRate / 1000;
-					 } 
+					}
 					return;
 				}
 
@@ -347,6 +347,47 @@ Game.graphics = (function () {
 		}
 	}
 
+
+	function ballProjectile(spec) {
+		let that = {};
+		that.alive = true;
+		that.center = { x: spec.center.x, y: spec.center.y };
+		that.damage = spec.damage;
+		that.destination = { x: spec.target.center.x, y: spec.target.center.x };
+		that.lifeTime = 3000;
+		that.radius = spec.radius;
+		that.rate = spec.rate / 1000;
+		that.target = spec.target;
+
+		that.draw = function () {
+			gameCtx.fillStyle = 'rgba(255, 0, 0, 1)';
+			gameCtx.beginPath();
+			gameCtx.moveTo(that.center.x, that.center.y);
+			gameCtx.arc(that.center.x, that.center.y, that.radius, 0, 2 * Math.PI, true);
+			gameCtx.lineTo(spec.center.x, spec.center.y);
+			gameCtx.fill();
+		}
+
+		that.update = function (elapsedTime) {
+			that.lifeTime -= elapsedTime;
+			if (that.lifeTime <= 0) { that.alive = false; return; }
+			let xCalc = that.target.center.x - that.center.x;
+			let yCalc = that.target.center.y - that.center.y;
+			let distance = Math.sqrt(Math.pow(xCalc, 2) + Math.pow(yCalc, 2));
+			if (distance < 20) {
+				that.target.hp -= that.damage;
+				that.alive = false;
+				return;
+			}
+
+			that.center.x += xCalc / that.rate;
+			that.center.y += yCalc / that.rate;
+		}
+
+
+		return that;
+	}
+
 	function resetCreepSeq(type, index) {
 		if ((type == 1 || type == 2) && index == 4) { return true; }
 		if (type == 3 && index == 6) { return true; }
@@ -356,14 +397,16 @@ Game.graphics = (function () {
 	function tower(spec) {
 		let that = {};
 
+		that.angle = 0;
 		that.center = { x: spec.center.x, y: spec.center.y };
 		that.cost = 50;
+		that.fireRate = spec.fireRate;
 		that.level = 1;
 		that.damage = that.level * 10;
-		that.fireRate = spec.fireRate;
-		that.range = 100;
-		that.rotationRate = 30 * Math.PI / 1000
-		that.angle = 0;
+
+		that.range = 150;
+		that.rotationRate = 25 * Math.PI / 1000
+
 		that.selected = false;
 		that.type = spec.type
 		that.weapon = getWeapon(spec.type, that.level);
@@ -371,10 +414,11 @@ Game.graphics = (function () {
 		that.target = 0;
 		that.targetDist = 1500;
 
-		that.setTarget = function (creeps) {	
+
+		that.setTarget = function (creeps) {
 			that.targetDist = 1500;
 			that.target = undefined;
-			if(creeps.length < 1){ target = undefined; return;}		
+			if (creeps.length < 1) { target = undefined; return; }
 			for (let i = 0; i < creeps.length; i++) {
 				if (typeof creeps[i] !== 'object') {
 					continue;
@@ -383,11 +427,24 @@ Game.graphics = (function () {
 				let xCalc = that.center.x - creep.center.x;
 				let yCalc = that.center.y - creep.center.y;
 				let distance = Math.sqrt(Math.pow(xCalc, 2) + Math.pow(yCalc, 2));
-				if (distance < that.targetDist) { 
+				if (distance < that.targetDist) {
 					that.targetDist = distance;
 					that.target = creeps[i];
 				}
-			}			
+			}
+		}
+
+		that.fire = function (elapsedTime, projectiles) {
+			if (that.targetDist <= that.range && elapsedTime < that.fireRate) {
+				projectiles.push(ballProjectile({
+					center: { x: that.center.x, y: that.center.y },
+					damage: that.damage,
+					destination: { x: that.target.center.x, y: that.target.center.y },
+					radius: 3,
+					rate: 2500,
+					target: that.target
+				}))
+			}
 		}
 
 		that.draw = function () {
@@ -437,10 +494,11 @@ Game.graphics = (function () {
 			}
 		}
 
-		that.update = function (elapsedTime, drawArcs, creeps) {
+		that.update = function (elapsedTime, drawArcs, creeps, projectiles) {
 			arcDraw = drawArcs;
+
 			that.setTarget(creeps);
-			if(typeof that.target === 'undefined'){return;}
+			if (typeof that.target === 'undefined') { return; }
 			let result = Helper.computeAngle(that.angle, that.center, that.target.center);
 			if (Helper.testTolerance(result.angle, 0, .03) === false) {
 				if (result.crossProduct > 0) {
@@ -449,6 +507,8 @@ Game.graphics = (function () {
 					that.angle -= that.rotationRate;
 				}
 			}
+
+			if (that.targetDist <= that.range) { that.fire(elapsedTime, projectiles) }
 		}
 
 		return that;
