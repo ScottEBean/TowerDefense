@@ -15,7 +15,7 @@ Game = {
 // file, then the code in this file gets all the other code and assets
 // loaded.
 //------------------------------------------------------------------
-Game.loader = (function() {
+Game.loader = (function () {
 	'use strict';
 	var scriptOrder = [
 		{
@@ -78,49 +78,52 @@ Game.loader = (function() {
 		}, {
 			key: 'tower43',
 			source: '/assets/towers/t43.png'
-        }, {
+		}, {
+			key: 'type1',
+			source: '/assets/towers/type1.png'
+		}, {
 			key: 'airCreep1',
 			source: '/assets/creeps/ac1.png'
-        }, {
+		}, {
 			key: 'airCreep2',
 			source: '/assets/creeps/ac2.png'
-        }, {
+		}, {
 			key: 'airCreep3',
 			source: '/assets/creeps/ac3.png'
-        }, {
+		}, {
 			key: 'airCreep4',
 			source: '/assets/creeps/ac4.png'
-        }, {
+		}, {
 			key: 'airCreep5',
 			source: '/assets/creeps/ac5.png'
-        }, {
+		}, {
 			key: 'airCreep6',
 			source: '/assets/creeps/ac6.png'
-        }, {
+		}, {
 			key: 'groundCreep11',
 			source: '/assets/creeps/gc11.png'
-        }, {
+		}, {
 			key: 'groundCreep12',
 			source: '/assets/creeps/gc12.png'
-        }, {
+		}, {
 			key: 'groundCreep13',
 			source: '/assets/creeps/gc13.png'
-        }, {
+		}, {
 			key: 'groundCreep14',
 			source: '/assets/creeps/gc14.png'
-        }, {
+		}, {
 			key: 'groundCreep21',
 			source: '/assets/creeps/gc21.png'
-        }, {
+		}, {
 			key: 'groundCreep22',
 			source: '/assets/creeps/gc22.png'
-        }, {
+		}, {
 			key: 'groundCreep23',
 			source: '/assets/creeps/gc23.png'
-        }, {
+		}, {
 			key: 'groundCreep24',
 			source: '/assets/creeps/gc24.png'
-        }];
+		}];
 
 	//------------------------------------------------------------------
 	// Zero pad a number, adapted from Stack Overflow.
@@ -149,7 +152,7 @@ Game.loader = (function() {
 		// When we run out of things to load, that is when we call onComplete.
 		if (scripts.length > 0) {
 			entry = scripts[0];
-			require(entry.scripts, function() {
+			require(entry.scripts, function () {
 				console.log(entry.message);
 				if (entry.onComplete) {
 					entry.onComplete();
@@ -182,12 +185,12 @@ Game.loader = (function() {
 		if (assets.length > 0) {
 			entry = assets[0];
 			loadAsset(entry.source,
-				function(asset) {
+				function (asset) {
 					onSuccess(entry, asset);
 					assets.splice(0, 1);
 					loadAssets(assets, onSuccess, onError, onComplete);
 				},
-				function(error) {
+				function (error) {
 					onError(error);
 					assets.splice(0, 1);
 					loadAssets(assets, onSuccess, onError, onComplete);
@@ -211,7 +214,7 @@ Game.loader = (function() {
 			xhr.open('GET', source, true);
 			xhr.responseType = 'blob';
 
-			xhr.onload = function() {
+			xhr.onload = function () {
 				if (xhr.status === 200) {
 					if (fileExtension === 'png' || fileExtension === 'jpg' || fileExtension === 'gif') {
 						asset = new Image();
@@ -220,7 +223,7 @@ Game.loader = (function() {
 					} else {
 						if (onError) { onError('Unknown file extension: ' + fileExtension); }
 					}
-					asset.onload = function() {
+					asset.onload = function () {
 						window.URL.revokeObjectURL(asset.src);
 					};
 					asset.src = window.URL.createObjectURL(xhr.response);
@@ -247,13 +250,13 @@ Game.loader = (function() {
 	// Start with loading the assets, then the scripts.
 	console.log('Starting to dynamically load project assets');
 	loadAssets(assetOrder,
-		function(source, asset) {	// Store it on success
+		function (source, asset) {	// Store it on success
 			Game.assets[source.key] = asset;
 		},
-		function(error) {
+		function (error) {
 			console.log(error);
 		},
-		function() {
+		function () {
 			console.log('All assets loaded');
 			console.log('Starting to dynamically load project scripts');
 			loadScripts(scriptOrder, mainComplete);

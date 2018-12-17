@@ -358,14 +358,16 @@ Game.graphics = (function () {
 		that.radius = spec.radius;
 		that.rate = spec.rate / 1000;
 		that.target = spec.target;
-
+		let image = Game.assets['type1'];
+		
 		that.draw = function () {
-			gameCtx.fillStyle = 'rgba(255, 0, 0, 1)';
-			gameCtx.beginPath();
-			gameCtx.moveTo(that.center.x, that.center.y);
-			gameCtx.arc(that.center.x, that.center.y, that.radius, 0, 2 * Math.PI, true);
-			gameCtx.lineTo(spec.center.x, spec.center.y);
-			gameCtx.fill();
+			if (!that.alive) { return; }
+			gameCtx.save();
+			gameCtx.translate(that.center.x, that.center.y);
+			gameCtx.rotate(that.rotation);
+			gameCtx.translate(-that.center.x, -that.center.y);
+			gameCtx.drawImage(image, that.center.x - 1.5 , that.center.y - 1.5, 3, 3);
+			gameCtx.restore();
 		}
 
 		that.update = function (elapsedTime) {

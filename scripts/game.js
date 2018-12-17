@@ -512,28 +512,27 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 
 		//projectiles
 		for (let i = 0; i < projectiles.length; i++) {
-			if (typeof projectiles[i] === 'object' && projectiles[i].alive) {				
+			if (typeof projectiles[i] === 'object' && projectiles[i].alive) {
 				projectiles[i].update(elapsedTime);
 			}
-			
+
 		}
 
 		// creeps
 		for (let i = 0; i < wave1; i++) {
-			if (creeps[i].finished && creeps[i].hp > 0) {
-				lives--;
-				creeps[i] = 0;
-			}
-			if (creeps[i].finished) {
-				score += 50;
-				creeps[i] = 0;
-			}
 			if (typeof creeps[i] === 'object') {
-				if (creeps[i].endpoint.x == 725) {
-					creeps[i].update(elapsedTime, lrGrid);
-
+				if (creeps[i].finished && creeps[i].hp > 0) {
+					lives--;
+					creeps[i] = 0;
+				} else if (creeps[i].finished) {
+					score += 50;
+					creeps[i] = 0;
 				} else {
-					creeps[i].update(elapsedTime, tbGrid);
+					if (creeps[i].endpoint.x == 725) {
+						creeps[i].update(elapsedTime, lrGrid);
+					} else {
+						creeps[i].update(elapsedTime, tbGrid);
+					}
 				}
 			}
 		}
