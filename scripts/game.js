@@ -34,7 +34,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	let drawGameGrid = true;
 	let go = false;
 	let lives = 10;
-	let score = 1000;
+	let score = 150;
 	let timeAccumulator = 0;
 
 	/*			Methods			*/
@@ -116,7 +116,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				center: startP,
 				direction: dir,
 				endpoint: endP,
-				hp: 50,
+				hp: 100,
 				rate: 0,
 				rotation: angle,
 				type: cType,
@@ -170,7 +170,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				center: startP,
 				direction: dir,
 				endpoint: endP,
-				hp: 50,
+				hp: 150,
 				rate: 0,
 				rotation: angle,
 				type: cType,
@@ -314,7 +314,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 
 		if (grid[rowIndex][colIndex] != 0 && grid[rowIndex][colIndex] != 1) { return; }
 
-		if (menuSelectedTower[0] == 1 && score > 50) {
+		if (menuSelectedTower[0] == 1 && score >= 50) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
 				rate: 30 * Math.PI / 1000,
@@ -331,7 +331,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 			score -= 50;
 			return;
 		}
-		if (menuSelectedTower[1] == 1 && score > 100) {
+		if (menuSelectedTower[1] == 1 && score >= 100) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
 				rate: 30 * Math.PI / 1000,
@@ -348,7 +348,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 			score -= 50;
 			return;
 		}
-		if (menuSelectedTower[2] == 1 && score > 50) {
+		if (menuSelectedTower[2] == 1 && score >= 50) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
 				rate: 30 * Math.PI / 1000,
@@ -365,7 +365,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 			score -= 50;
 			return;
 		}
-		if (menuSelectedTower[3] == 1 && score > 100) {
+		if (menuSelectedTower[3] == 1 && score >= 100) {
 			grid[rowIndex][colIndex] = graphics.tower({
 				center: { x: mPx + 25, y: mPy + 25 },
 				rate: 20 * Math.PI / 1000,
@@ -521,7 +521,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		}
 
 		// creeps
-		for (let i = 0; i < wave1; i++) {
+		for (let i = 0; i < wave1 + wave2 + wave3; i++) {
 			if (typeof creeps[i] === 'object') {
 				if (creeps[i].finished && creeps[i].hp > 0) {
 					lives--;

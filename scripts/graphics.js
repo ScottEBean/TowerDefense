@@ -455,7 +455,7 @@ Game.graphics = (function () {
 			gameCtx.translate(that.center.x, that.center.y);
 			gameCtx.rotate(that.rotation);
 			gameCtx.translate(-that.center.x, -that.center.y);
-			gameCtx.drawImage(image, that.center.x - 1.5, that.center.y - 1.5, 3, 3);
+			gameCtx.drawImage(image, that.center.x - 1.5, that.center.y - 1.5, 15, 15);
 			gameCtx.restore();
 		}
 
@@ -500,16 +500,38 @@ Game.graphics = (function () {
 			gameCtx.translate(that.center.x, that.center.y);
 			gameCtx.rotate(that.rotation);
 			gameCtx.translate(-that.center.x, -that.center.y);
-			gameCtx.drawImage(image, that.center.x - 1.5, that.center.y - 1.5, 3, 3);
+			gameCtx.drawImage(image, that.center.x - 1.5, that.center.y - 1.5, 15, 15);
 			gameCtx.restore();
 		}
 
 		that.update = function (elapsedTime) {
 			that.lifeTime -= elapsedTime;
 			if (that.lifeTime <= 0) { that.alive = false; return; }
+
+			if (typeof that.target === 'undefined') { return; }
+			let result = Helper.computeAngle(that.rotation, that.center, that.target.center);
+			if (Helper.testTolerance(result.angle, 0, .03) === false) {
+				if (result.crossProduct > 0) {
+					that.angle = result.angle;
+				} 
+			}
+			
+			
+			
+			
+			
+			
+			
+			
 			let xDist = that.target.center.x - that.center.x;
 			let yDist = that.target.center.y - that.center.y;
+
+
+
 			distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+			
+
+
 			if (distance < 20) {
 				that.target.hp -= that.damage;
 				that.alive = false;
@@ -577,7 +599,7 @@ Game.graphics = (function () {
 
 		that.fire = function (elapsedTime, projectiles) {
 			shotTimer -= elapsedTime
-			if (that.targetDist <= that.range && shotTimer <= 0) {
+			if (that.targetDist <= that.range && shotTimer <= 0 && that.target.moveRate > 0) {
 				shotTimer = 750;
 				let destX = that.target.center.x;
 				let destY = that.target.center.y;
@@ -606,6 +628,7 @@ Game.graphics = (function () {
 						center: { x: that.center.x, y: that.center.y },
 						damage: that.damage,
 						destination: { x: destX, y: destY },
+						rotation: that.angle,
 						radius: 3,
 						rate: 100,
 						target: that.target
@@ -616,6 +639,7 @@ Game.graphics = (function () {
 						center: { x: that.center.x, y: that.center.y },
 						damage: that.damage,
 						destination: { x: destX, y: destY },
+						rotation: that.angle,
 						radius: 3,
 						rate: 100,
 						target: that.target
