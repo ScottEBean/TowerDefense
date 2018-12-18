@@ -82,6 +82,15 @@ Game.loader = (function () {
 			key: 'type1',
 			source: '/assets/towers/type1.png'
 		}, {
+			key: 'rocket',
+			source: '/assets/towers/rocket.png'
+		}, {
+			key: 'missile',
+			source: '/assets/towers/missile.png'
+		}, {
+			key: 'bomb',
+			source: '/assets/towers/bomb.png'
+		}, {
 			key: 'airCreep1',
 			source: '/assets/creeps/ac1.png'
 		}, {

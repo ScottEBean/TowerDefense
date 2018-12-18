@@ -21,8 +21,6 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 	let grid = new Array(15);
 	let lrGrid = new Array(15);
 	let tbGrid = new Array(15);
-	let testStack = [];
-	let testStack2 = [];
 	let lrAirStack = [];
 	let lrGndStack = [];
 	let tbAirStack = [];
@@ -273,6 +271,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		initializeGrids();
 		createPaths();
 		createWave1();
+		createWave2();
+		createWave3();
 		graphics.drawGrid();
 		graphics.drawBackground();
 		graphics.drawTowerTypes();
@@ -485,7 +485,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 
 	function setWaveRateInterval(wave, elapsedTime) {
 		timeAccumulator += elapsedTime;
-		for (let i = 0; i < wave.length; i++) {
+		for (let i = 0; i < wave1 + wave2 + wave3; i++) {
 			if (wave[i].moveRate == 0 && timeAccumulator > 2000) {
 				timeAccumulator = 0;
 				wave[i].moveRate = 1000;
@@ -507,7 +507,7 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		for (let i = 0; i < grid.length; i++) {
 			for (let j = 0; j < grid.length; j++) {
 				if (typeof (grid[i][j]) === 'object') {
-					grid[i][j].update(elapsedTime, drawArcs, creeps, projectiles);
+					grid[i][j].update(elapsedTime, drawArcs, creeps, projectiles, go);
 				}
 			}
 		}

@@ -353,7 +353,6 @@ Game.graphics = (function () {
 		that.damage = spec.damage;
 		that.destination = { x: spec.target.center.x, y: spec.target.center.y };
 		that.lifeTime = 3000;
-		that.radius = spec.radius;
 		that.rate = spec.rate;
 		that.target = spec.target;
 		let image = Game.assets['type1'];
@@ -373,19 +372,152 @@ Game.graphics = (function () {
 
 		that.update = function (elapsedTime) {
 			that.lifeTime -= elapsedTime;
-			if (that.lifeTime <= 0) { that.alive = false; return; }	
+			if (that.lifeTime <= 0) { that.alive = false; return; }
 			let xDist = that.target.center.x - that.center.x;
-			let yDist = that.target.center.y - that.center.y;				
+			let yDist = that.target.center.y - that.center.y;
 			distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
 			if (distance < 20) {
 				that.target.hp -= that.damage;
-				console.log(that.target.hp);
 				that.alive = false;
 				return;
 			}
 
-			that.center.x += xCalc * that.rate /1000;
-			that.center.y += yCalc * that.rate /1000;
+			that.center.x += xCalc * that.rate / 1000;
+			that.center.y += yCalc * that.rate / 1000;
+		}
+
+
+		return that;
+	}
+
+	function bombProjectile(spec) {
+		let that = {};
+		that.alive = true;
+		that.center = { x: spec.center.x, y: spec.center.y };
+		that.damage = spec.damage;
+		that.destination = { x: spec.target.center.x, y: spec.target.center.y };
+		that.lifeTime = 3000;
+		that.rate = spec.rate;
+		that.target = spec.target;
+		let image = Game.assets['bomb'];
+		let xCalc = that.target.center.x - that.center.x;
+		let yCalc = that.target.center.y - that.center.y;
+		let distance = Math.sqrt(Math.pow(xCalc, 2) + Math.pow(yCalc, 2));
+
+		that.draw = function () {
+			if (!that.alive) { return; }
+			gameCtx.save();
+			gameCtx.translate(that.center.x, that.center.y);
+			gameCtx.rotate(that.rotation);
+			gameCtx.translate(-that.center.x, -that.center.y);
+			gameCtx.drawImage(image, that.center.x - 1.5, that.center.y - 1.5, 3, 3);
+			gameCtx.restore();
+		}
+
+		that.update = function (elapsedTime) {
+			that.lifeTime -= elapsedTime;
+			if (that.lifeTime <= 0) { that.alive = false; return; }
+			let xDist = that.target.center.x - that.center.x;
+			let yDist = that.target.center.y - that.center.y;
+			distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+			if (distance < 20) {
+				that.target.hp -= that.damage;
+				that.alive = false;
+				return;
+			}
+
+			that.center.x += xCalc * that.rate / 1000;
+			that.center.y += yCalc * that.rate / 1000;
+		}
+
+
+		return that;
+	}
+
+	function rocketProjectile(spec) {
+		let that = {};
+		that.alive = true;
+		that.center = { x: spec.center.x, y: spec.center.y };
+		that.damage = spec.damage;
+		that.destination = { x: spec.target.center.x, y: spec.target.center.y };
+		that.lifeTime = 3000;
+		that.rotation = spec.rotation;
+		that.rate = spec.rate;
+		that.target = spec.target;
+		let image = Game.assets['rocket'];
+		let xCalc = that.target.center.x - that.center.x;
+		let yCalc = that.target.center.y - that.center.y;
+		let distance = Math.sqrt(Math.pow(xCalc, 2) + Math.pow(yCalc, 2));
+
+		that.draw = function () {
+			if (!that.alive) { return; }
+			gameCtx.save();
+			gameCtx.translate(that.center.x, that.center.y);
+			gameCtx.rotate(that.rotation);
+			gameCtx.translate(-that.center.x, -that.center.y);
+			gameCtx.drawImage(image, that.center.x - 1.5, that.center.y - 1.5, 3, 3);
+			gameCtx.restore();
+		}
+
+		that.update = function (elapsedTime) {
+			that.lifeTime -= elapsedTime;
+			if (that.lifeTime <= 0) { that.alive = false; return; }
+			let xDist = that.target.center.x - that.center.x;
+			let yDist = that.target.center.y - that.center.y;
+			distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+			if (distance < 20) {
+				that.target.hp -= that.damage;
+				that.alive = false;
+				return;
+			}
+
+			that.center.x += xCalc * that.rate / 1000;
+			that.center.y += yCalc * that.rate / 1000;
+		}
+
+
+		return that;
+	}
+
+	function missileProjectile(spec) {
+		let that = {};
+		that.alive = true;
+		that.center = { x: spec.center.x, y: spec.center.y };
+		that.damage = spec.damage;
+		that.destination = { x: spec.target.center.x, y: spec.target.center.y };
+		that.lifeTime = 3000;
+		that.rotation = spec.rotation;
+		that.rate = spec.rate;
+		that.target = spec.target;
+		let image = Game.assets['missile'];
+		let xCalc = that.target.center.x - that.center.x;
+		let yCalc = that.target.center.y - that.center.y;
+		let distance = Math.sqrt(Math.pow(xCalc, 2) + Math.pow(yCalc, 2));
+
+		that.draw = function () {
+			if (!that.alive) { return; }
+			gameCtx.save();
+			gameCtx.translate(that.center.x, that.center.y);
+			gameCtx.rotate(that.rotation);
+			gameCtx.translate(-that.center.x, -that.center.y);
+			gameCtx.drawImage(image, that.center.x - 1.5, that.center.y - 1.5, 3, 3);
+			gameCtx.restore();
+		}
+
+		that.update = function (elapsedTime) {
+			that.lifeTime -= elapsedTime;
+			if (that.lifeTime <= 0) { that.alive = false; return; }
+			let xDist = that.target.center.x - that.center.x;
+			let yDist = that.target.center.y - that.center.y;
+			distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+			if (distance < 20) {
+				that.target.hp -= that.damage;
+				that.alive = false;
+				return;
+			}
+
+			that.center.x += xCalc * that.rate / 1000;
+			that.center.y += yCalc * that.rate / 1000;
 		}
 
 
@@ -432,7 +564,11 @@ Game.graphics = (function () {
 				let xCalc = that.center.x - creep.center.x;
 				let yCalc = that.center.y - creep.center.y;
 				let distance = Math.sqrt(Math.pow(xCalc, 2) + Math.pow(yCalc, 2));
-				if (distance < that.targetDist) {
+				if (distance < that.targetDist && that.type <= 2 && creeps[i].type <=2 ) { //ground units shoot ground targets
+					that.targetDist = distance;
+					that.target = creeps[i];
+				}
+				if (distance < that.targetDist && that.type > 2 && creeps[i].type  == 3) {// air units shoot air targets
 					that.targetDist = distance;
 					that.target = creeps[i];
 				}
@@ -440,19 +576,51 @@ Game.graphics = (function () {
 		}
 
 		that.fire = function (elapsedTime, projectiles) {
-			shotTimer-=elapsedTime
+			shotTimer -= elapsedTime
 			if (that.targetDist <= that.range && shotTimer <= 0) {
 				shotTimer = 750;
 				let destX = that.target.center.x;
 				let destY = that.target.center.y;
-				projectiles.push(ballProjectile({
-					center: { x: that.center.x, y: that.center.y },
-					damage: that.damage,
-					destination: { x: destX, y: destY },
-					radius: 3,
-					rate: 100,
-					target: that.target
-				}))
+				if (that.type == 1) {
+					projectiles.push(ballProjectile({
+						center: { x: that.center.x, y: that.center.y },
+						damage: that.damage,
+						destination: { x: destX, y: destY },
+						radius: 3,
+						rate: 100,
+						target: that.target
+					}));
+				}
+				if (that.type == 2) {
+					projectiles.push(bombProjectile({
+						center: { x: that.center.x, y: that.center.y },
+						damage: that.damage,
+						destination: { x: destX, y: destY },
+						radius: 3,
+						rate: 100,
+						target: that.target
+					}));
+				}
+				if (that.type == 3) {
+					projectiles.push(rocketProjectile({
+						center: { x: that.center.x, y: that.center.y },
+						damage: that.damage,
+						destination: { x: destX, y: destY },
+						radius: 3,
+						rate: 100,
+						target: that.target
+					}));
+				}
+				if (that.type == 4) {
+					projectiles.push(missileProjectile({
+						center: { x: that.center.x, y: that.center.y },
+						damage: that.damage,
+						destination: { x: destX, y: destY },
+						radius: 3,
+						rate: 100,
+						target: that.target
+					}));
+				}
 			}
 		}
 
@@ -483,7 +651,7 @@ Game.graphics = (function () {
 			gameCtx.arc(that.center.x, that.center.y, that.range, 0, 2 * Math.PI, true);
 			gameCtx.lineTo(spec.center.x, spec.center.y);
 			gameCtx.fill();
-		}		
+		}
 
 		that.upgrade = function () {
 			if (level < 3) {
@@ -495,7 +663,7 @@ Game.graphics = (function () {
 			}
 		}
 
-		that.update = function (elapsedTime, drawArcs, creeps, projectiles) {
+		that.update = function (elapsedTime, drawArcs, creeps, projectiles, go) {
 			arcDraw = drawArcs;
 
 			if (!typeof that.target === 'undefined' && that.target.finished) { that.target = 'undefined'; }
@@ -510,7 +678,7 @@ Game.graphics = (function () {
 				}
 			}
 
-			if (that.targetDist <= that.range) { that.fire(elapsedTime, projectiles) }
+			if (that.targetDist <= that.range && go) { that.fire(elapsedTime, projectiles) }
 		}
 
 		return that;
