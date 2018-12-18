@@ -68,12 +68,10 @@ Game.graphics = (function () {
 		}
 
 		that.update = function (elapsedTime, grid) {
-
-			if (Math.abs(that.endpoint.x - that.center.x) < 10 && Math.abs(that.endpoint.y - that.center.y) < 15) {
+			if ((Math.abs(that.endpoint.x - that.center.x) < 5 && Math.abs(that.endpoint.y - that.center.y) < 5) || that.hp <= 0) {
 				that.finished = true;
-				console.log("finished")
+				return;
 			}
-			if (that.finished) { return; }
 
 			if (that.type == 3) {
 				if (that.direction == 'dn') { that.center.y += that.moveRate / 1000; return; } // keep going dn
