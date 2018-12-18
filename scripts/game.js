@@ -399,13 +399,13 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 		}
 		drawGridSelectedBox();
 
-
 		//projectiles
 		for (let i = 0; i < projectiles.length; i++) {
 			if (typeof projectiles[i] === 'object' && projectiles[i].alive) {
 				projectiles[i].draw();
 			}
 		}
+		
 
 		//creeps
 		if (go) {
@@ -415,6 +415,8 @@ Game.screens['game-play'] = (function (input, graphics, records, menu, ) {
 				}
 			}
 		}
+
+		
 
 		//menu
 		graphics.clearMenu();
